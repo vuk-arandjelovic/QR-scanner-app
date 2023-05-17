@@ -21,7 +21,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.container}>
+      <View style={styles.containerTop}>
           <TouchableOpacity onPress={screenQueryMenu} style={styles.button}>
             <Text style={styles.buttonText}>
               Your Data
@@ -53,15 +53,19 @@ export default HomeScreen
 const styles = StyleSheet.create({ 
   container: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingVertical: 20,
+  },
+  containerTop: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   containerBottom: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
+    width: '100%',
   },
   button: {
     backgroundColor: '#0782F9',
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     marginTop: 15,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   buttonScanner: {
     backgroundColor: '#0782F9',
