@@ -1,12 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, {useEffect, useState} from 'react'
-import getAppVersion from '../APICalls/apiGetAppVersion'
+// import { apiGetRequests } from '../APICalls'
+import apiGetRequestsExporter from '../APICalls/apiGetRequestsExporter'
+
+const api = apiGetRequestsExporter
 
 const QueryScreen = () => {
   const [rawData,setRawData] = useState("")
   
   useEffect(() => {
-    getAppVersion()
+    api.getAppVersion()
     .then((res)=>{
       setRawData(res["required_version"])
     })
