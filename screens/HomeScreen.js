@@ -6,18 +6,17 @@ const HomeScreen = () => {
   const navigation = useNavigation()
 
   const screenQueryMenu = () => {
-
     navigation.navigate('Query')
   }
   const screenMap = () => {
-
     navigation.navigate('Map')
   }
   const screenScanner = () => {
-
     navigation.navigate('Scanner')
   }
-
+  const screenTester = () => {
+    navigation.navigate('Tester')
+  }
 
   return (
     <View style={styles.container}>
@@ -30,6 +29,11 @@ const HomeScreen = () => {
           <TouchableOpacity onPress={screenMap} style={styles.button}>
             <Text style={styles.buttonText}>
               Map View
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={screenTester} style={styles.button}>
+            <Text style={styles.buttonText}>
+              Tester
             </Text>
           </TouchableOpacity>
       </View>

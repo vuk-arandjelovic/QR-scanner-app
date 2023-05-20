@@ -12,7 +12,7 @@ export const getAppVersion = async () => {
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return responseGlobal
+    return [responseGlobal]
 }; 
 // Returns a list of Reciept URLs
 export const getUrlList = async () => {
@@ -91,7 +91,7 @@ export const getArtikalById = async (artikal_id) => {
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return responseGlobal
+    return [responseGlobal]
 };
 // Returns an Artikal by Artikal Naziv and Prodavnica ID
 export const getArtikalByNazivAndProdavnicaId = async (artikal_naziv, prodavnica_id) => {
@@ -100,7 +100,7 @@ export const getArtikalByNazivAndProdavnicaId = async (artikal_naziv, prodavnica
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return responseGlobal
+    return [responseGlobal]
 };
 // Returns an Artikal by Artikal Naziv
 export const getArtikalByNaziv = async (artikal_naziv) => {
@@ -109,7 +109,7 @@ export const getArtikalByNaziv = async (artikal_naziv) => {
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return responseGlobal
+    return [responseGlobal]
 };
 // ###########################################################
 // Requests related to Artikal_cena using parameters
@@ -121,7 +121,7 @@ export const getArtikalCenaById = async (artikal_id) => {
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return responseGlobal
+    return [responseGlobal]
 };
 // ###########################################################
 // Requests related to Racun using parameters
@@ -133,7 +133,7 @@ export const getRacunById = async (racun_id) => {
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return responseGlobal
+    return [responseGlobal]
 };
 // ###########################################################
 // End of Requests

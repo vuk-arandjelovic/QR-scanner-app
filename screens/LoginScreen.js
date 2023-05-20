@@ -10,21 +10,19 @@ const LoginScreen = () => {
   const [password,setPassword] = useState('')
 
   function handleLogIn(){
+    // Autentikacija ide ovde
     // Alert.alert('{'+email+','+password+'}')
     // if(email !== "Tester" || password !== "tester")
     //   return Alert.alert("Nalog ne postoji")
-    
     navigation.navigate('Home')
   }
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior='padding'>
-        {/* <View style={styles.logoContainer}> */}
-          <Image
-            style={styles.logo}
-            source={require('../assets/racuni_scanner_logo.png')}
-          />
-        {/* </View> */}
+        <Image
+        style={styles.logo}
+        source={require('../assets/racuni_scanner_logo.png')}
+        />
         <View style={styles.inputContainer}>
             <TextInput 
                 placeholder='E-mail'

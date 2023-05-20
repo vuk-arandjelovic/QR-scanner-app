@@ -20,8 +20,7 @@ const QueryScreen = () => {
       {/* <Text>{rawData[0].map((item)=>{
         // console.log(item)
         // console.log(item['naziv'])
-        return `${item['naziv']}
-        `       
+        return `${item['naziv']}   
       })}
       </Text> */}
       <Text>{rawData.map((item)=>{
