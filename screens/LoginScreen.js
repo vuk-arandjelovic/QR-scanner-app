@@ -2,6 +2,8 @@ import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, Image } fro
 import React, { useState } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
 import { useNavigation } from '@react-navigation/core'
+import apiExporter from '../API/apiExporter'
+const api = apiExporter
 
 const LoginScreen = () => {
   const navigation = useNavigation()
@@ -14,7 +16,8 @@ const LoginScreen = () => {
     // Alert.alert('{'+email+','+password+'}')
     // if(email !== "Tester" || password !== "tester")
     //   return Alert.alert("Nalog ne postoji")
-    navigation.navigate('Home')
+    api.postLogInToken()
+    //navigation.navigate('Home')
   }
 
   return (

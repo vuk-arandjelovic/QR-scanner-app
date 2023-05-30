@@ -17,3 +17,20 @@ export const postAddURL = async (recieptURL) => {
 // ###########################################################
 // End of Requests
 // ###########################################################
+export const postLogInToken = async (username = "test", password="test") => {
+    const url = `${API_URL}/token`;
+    const response = await axios.post(url,{
+        auth: {
+          username: "tester", // This is the client_id
+          password: "tester" // This is the client_secret
+        },
+        data: {
+          "grant_type": "password_credentials",
+          "scope": "public"    
+        }
+      })
+    console.log(response.data);
+    responseGlobal = response.data
+    if(responseGlobal !== undefined)
+    return [responseGlobal]
+};

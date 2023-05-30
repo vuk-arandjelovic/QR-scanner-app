@@ -13,7 +13,8 @@ import { getAppVersion,
   getArtikalCenaById,
   getRacunById } from "./APIRequests/apiGetRequests";
 // Post Request Imports
-import { postAddURL } from "./APIRequests/apiPostRequests";
+import { postAddURL,
+  postLogInToken } from "./APIRequests/apiPostRequests";
 
 // Export
 export default { getAppVersion,
@@ -29,5 +30,6 @@ export default { getAppVersion,
   getArtikalByNaziv,
   getArtikalCenaById,
   getRacunById,
-  postAddURL
+  postAddURL,
+  postLogInToken,
  }

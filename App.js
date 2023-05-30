@@ -2,6 +2,15 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ScannerScreen, MapScreen, QueryScreen, LoginScreen, HomeScreen, Tester } from './screens';
+import {decode, encode} from 'base-64'
+
+if (!global.btoa) {
+global.btoa = encode;
+}
+
+if (!global.atob) {
+global.atob = decode;
+}
 
 const Stack = createNativeStackNavigator()
 //const APIKey = "AIzaSyA4cPpI8vEtuH7XsehicnxaJVlTGo2Cs4E"
