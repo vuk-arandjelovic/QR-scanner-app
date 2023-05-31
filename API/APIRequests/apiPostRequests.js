@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { toFormData } from "axios";
 import { API_URL } from "../PATHS";
 let responseGlobal
 // ###########################################################
@@ -17,20 +17,15 @@ export const postAddURL = async (recieptURL) => {
 // ###########################################################
 // End of Requests
 // ###########################################################
-export const postLogInToken = async (username = "test", password="test") => {
+export const postLogInToken = async (username, password) => {
     const url = `${API_URL}/token`;
-    const response = await axios.post(url,{
-        auth: {
-          username: "tester", // This is the client_id
-          password: "tester" // This is the client_secret
-        },
-        data: {
-          "grant_type": "password_credentials",
-          "scope": "public"    
-        }
+    const response = await axios.postForm(url,{
+        username:username,
+        password:password,
+        grant_type:"password"
       })
     console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
-    return [responseGlobal]
+    return responseGlobal
 };

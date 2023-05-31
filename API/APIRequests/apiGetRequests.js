@@ -55,10 +55,12 @@ export const getArtikalCenaAll = async () => {
     return responseGlobal
 };
 // Returns all Racun entries
-export const getRacunAll = async () => {
-    const url = `${API_URL}/racun/all/full`;
-    const response = await axios.get(url);
-    console.log(response.data);
+export const getRacunAll = async (logInToken) => {
+    const url = `${API_URL}/racun/all`;
+    const response = await axios.get(url,{ 
+        headers: {"Authorization" : `Bearer ${logInToken}`} 
+    });
+    // console.log(response.data);
     responseGlobal = response.data
     if(responseGlobal !== undefined)
     return responseGlobal

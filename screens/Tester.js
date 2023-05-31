@@ -1,21 +1,29 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import MapView from 'react-native-maps';
+import { StyleSheet, Text, ScrollView, View } from 'react-native'
+import React, {useState,useEffect} from 'react'
+import apiExporter from '../API/apiExporter'
+const api = apiExporter
 
-const Tester = () => {
+const Tester = (Token) => {
+  const logInToken = Token.route.params
+  const [rawData,setRawData] = useState([])
+
+  useEffect(() => {
+    api.getRacunAll(logInToken)
+    .then((res)=>{
+      // console.log(res)
+      setRawData(res)
+    })
+  },[])
+
   return (
-    <View style={styles.container}>
-        <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 44.78825,
-          longitude: 20.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        />  
-        <Text>Mapa</Text>      
-    </View>
+    <ScrollView>
+      <Text>QueryScreen</Text>
+      {rawData?.map((item)=>{
+        // console.log(item.id)
+        return (<Text>{item.kasir.toString()}</Text>)    
+      })}
+      
+    </ScrollView>
   )
 }
 

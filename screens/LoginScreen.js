@@ -7,17 +7,41 @@ const api = apiExporter
 
 const LoginScreen = () => {
   const navigation = useNavigation()
-  
+  const [authToken, setAuthToken] = useState()
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
+  if(authToken !== undefined){
+    setAuthToken(undefined)
+  }
 
-  function handleLogIn(){
-    // Autentikacija ide ovde
-    // Alert.alert('{'+email+','+password+'}')
-    // if(email !== "Tester" || password !== "tester")
-    //   return Alert.alert("Nalog ne postoji")
-    api.postLogInToken()
-    //navigation.navigate('Home')
+  async function handleLogIn(){
+    try{
+        const logInToken = await api.postLogInToken(email,password)
+        // console.log("Provere")
+        // console.log(logInToken)
+        // console.log(logInToken?.access_token)
+        // console.log(typeof(logInToken?.access_token))
+        // console.log("Gotove Provere")
+        if(logInToken !== undefined){
+            setAuthToken(logInToken)
+            navigation.navigate('Home',logInToken)
+        }
+
+    }catch(err){
+        if(err.response.status == 422){
+            console.log("Error 422... :)")
+            return
+        }
+        // console.log(err)
+        console.log(err.response.data)
+        console.log(err.response.status)
+        // console.log(err.response.headers)
+        alert("Code " + err.response.status + ": " +err.response.data.detail)
+        if(logInToken?.access_token == undefined){
+            return
+        }
+    }
+    
   }
 
   return (

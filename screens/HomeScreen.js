@@ -2,7 +2,9 @@ import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/core'
 
-const HomeScreen = () => {
+const HomeScreen = (Token) => {
+  const logInToken = Token.route.params.access_token
+  console.log(logInToken)
   const navigation = useNavigation()
 
   const screenQueryMenu = () => {
@@ -15,7 +17,7 @@ const HomeScreen = () => {
     navigation.navigate('Scanner')
   }
   const screenTester = () => {
-    navigation.navigate('Tester')
+    navigation.navigate('Tester',logInToken)
   }
 
   return (
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1/1,
     borderRadius: 15,
     padding: 30,
+    paddingTop:15,
     marginBottom: 15,
     alignItems: 'center',
   },
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '700',
     fontSize: 16,
-    paddingBottom: 15,
+    paddingBottom: 13,
   },
   logo:{
     objectFit: 'contain',
