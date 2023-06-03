@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/core'
 
 const HomeScreen = (Token) => {
-  const logInToken = Token.route.params.access_token
-  console.log(logInToken)
+  console.log(Token)
   const navigation = useNavigation()
 
   const screenQueryMenu = () => {
@@ -17,7 +16,7 @@ const HomeScreen = (Token) => {
     navigation.navigate('Scanner')
   }
   const screenTester = () => {
-    navigation.navigate('Tester',logInToken)
+    navigation.navigate('Tester', Token)
   }
 
   return (

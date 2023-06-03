@@ -5,39 +5,39 @@ import { useNavigation } from '@react-navigation/core'
 
 var RacuniAPI = require('RacuniAPI');
 
+let defaultClient = RacuniAPI.ApiClient.instance;
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = '';
+
+const AccountAPI = new RacuniAPI.AccountApi()
+
 const LoginScreen = () => {
   const navigation = useNavigation()
   const [authToken, setAuthToken] = useState()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
   if (authToken !== undefined) {
     setAuthToken(undefined)
   }
 
   async function handleLogIn() {
-    try {
-      const logInToken = await api.postLogInToken(email, password)
-      if (logInToken !== undefined) {
-        setAuthToken(logInToken)
-        navigation.navigate('Home', logInToken)
+    AccountAPI.loginForAccessTokenTokenPost(email, password, '', (error, data, response) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('API called successfully. Returned data: ' + data['access_token']);
+        if(data !== undefined){
+          setAuthToken(data['access_token'])
+          OAuth2PasswordBearer.accessToken = data['access_token']
+          navigation.navigate('Home', data)
+        }
       }
-
-    } catch (err) {
-      if (err.response.status == 422) {
-        console.log("Error 422... :)")
-        return
-      }
-      console.log(err.response.data)
-      console.log(err.response.status)
-      alert("Code " + err.response.status + ": " + err.response.data.detail)
-      if (logInToken?.access_token == undefined) {
-        return
-      }
-    }
+    });
   }
 
   async function handleRegister() {
-    FastApi.ArtikalApi().getArtikalAllArtikalAllGet((error, data, response) => {
+    AccountAPI.readUsersMeUserMeGet((error, data, response) => {
       if (error) {
         console.error(error);
       } else {

@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, {useEffect, useState} from 'react'
-import apiExporter from '../API/apiExporter'
-const api = apiExporter
 
 const QueryScreen = () => {
   const [rawData,setRawData] = useState([])
