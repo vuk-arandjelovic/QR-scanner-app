@@ -3,47 +3,40 @@ import React, { useState } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
 import { useNavigation } from '@react-navigation/core'
 
-var RacuniAPI = require('RacuniAPI');
-
-let defaultClient = RacuniAPI.ApiClient.instance;
-let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
-OAuth2PasswordBearer.accessToken = '';
-
-const AccountAPI = new RacuniAPI.AccountApi()
+const api = require("../API/RacuniAPI").getInstance();
 
 const LoginScreen = () => {
   const navigation = useNavigation()
   const [authToken, setAuthToken] = useState()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('tester')
+  const [password, setPassword] = useState('tester')
 
   if (authToken !== undefined) {
     setAuthToken(undefined)
   }
 
   async function handleLogIn() {
-    AccountAPI.loginForAccessTokenTokenPost(email, password, '', (error, data, response) => {
+    api.Account.loginForAccessTokenTokenPost(email, password, '', (error, data, response) => {
       if (error) {
         console.error(error);
       } else {
         console.log('API called successfully. Returned data: ' + data['access_token']);
         if(data !== undefined){
-          setAuthToken(data['access_token'])
-          OAuth2PasswordBearer.accessToken = data['access_token']
-          navigation.navigate('Home', data)
+          api.setAccessToken(data['access_token'])
+          navigation.navigate('Home')
         }
       }
     });
   }
 
   async function handleRegister() {
-    AccountAPI.readUsersMeUserMeGet((error, data, response) => {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('API called successfully. Returned data: ' + JSON.stringify(data, 0, 4));
-      }
-    });
+    // AccountAPI.readUsersMeUserMeGet((error, data, response) => {
+    //   if (error) {
+    //     console.error(error);
+    //   } else {
+    //     console.log('API called successfully. Returned data: ' + JSON.stringify(data, 0, 4));
+    //   }
+    // });
   }
 
   return (

@@ -1,6 +1,5 @@
 .babelrc
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 docs/AccountApi.md
@@ -36,17 +35,3 @@ src/model/LocationInner.js
 src/model/Token.js
 src/model/User.js
 src/model/ValidationError.js
-test/api/AccountApi.spec.js
-test/api/AllApi.spec.js
-test/api/ArtikalApi.spec.js
-test/api/ArtikalCenaApi.spec.js
-test/api/ArtikalRacunApi.spec.js
-test/api/BackupApi.spec.js
-test/api/FirmaApi.spec.js
-test/api/ProdavnicaApi.spec.js
-test/api/RacunApi.spec.js
-test/model/HTTPValidationError.spec.js
-test/model/LocationInner.spec.js
-test/model/Token.spec.js
-test/model/User.spec.js
-test/model/ValidationError.spec.js

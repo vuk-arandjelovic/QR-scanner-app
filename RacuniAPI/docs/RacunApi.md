@@ -4,12 +4,60 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**addRacunRacunPost**](RacunApi.md#addRacunRacunPost) | **POST** /racun/ | Add Racun
 [**getRacunAllRacunAllGet**](RacunApi.md#getRacunAllRacunAllGet) | **GET** /racun/all | Get Racun All
 [**getRacunAllUrlRacunAllUrlGet**](RacunApi.md#getRacunAllUrlRacunAllUrlGet) | **GET** /racun/all/url | Get Racun All Url
 [**getRacunByIdRacunIdIdGet**](RacunApi.md#getRacunByIdRacunIdIdGet) | **GET** /racun/id/{id} | Get Racun By Id
 [**getRacunByPibRacunProdavnicaIdPibGet**](RacunApi.md#getRacunByPibRacunProdavnicaIdPibGet) | **GET** /racun/prodavnica_id/{pib} | Get Racun By Pib
 [**getRacunByProdavnicaIdRacunProdavnicaIdProdavnicaIdGet**](RacunApi.md#getRacunByProdavnicaIdRacunProdavnicaIdProdavnicaIdGet) | **GET** /racun/prodavnica_id/{prodavnica_id} | Get Racun By Prodavnica Id
 
+
+
+## addRacunRacunPost
+
+> Object addRacunRacunPost(url)
+
+Add Racun
+
+### Example
+
+```javascript
+import FastApi from 'fast_api';
+let defaultClient = FastApi.ApiClient.instance;
+// Configure OAuth2 access token for authorization: OAuth2PasswordBearer
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
+
+let apiInstance = new FastApi.RacunApi();
+let url = "url_example"; // String | 
+apiInstance.addRacunRacunPost(url, (error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **url** | **String**|  | 
+
+### Return type
+
+**Object**
+
+### Authorization
+
+[OAuth2PasswordBearer](../README.md#OAuth2PasswordBearer)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 
 ## getRacunAllRacunAllGet

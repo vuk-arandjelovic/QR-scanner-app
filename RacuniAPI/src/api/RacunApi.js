@@ -35,6 +35,48 @@ export default class RacunApi {
 
 
     /**
+     * Callback function to receive the result of the addRacunRacunPost operation.
+     * @callback module:api/RacunApi~addRacunRacunPostCallback
+     * @param {String} error Error message, if any.
+     * @param {Object} data The data returned by the service call.
+     * @param {String} response The complete HTTP response.
+     */
+
+    /**
+     * Add Racun
+     * @param {String} url 
+     * @param {module:api/RacunApi~addRacunRacunPostCallback} callback The callback function, accepting three arguments: error, data, response
+     * data is of type: {@link Object}
+     */
+    addRacunRacunPost(url, callback) {
+      let postBody = null;
+      // verify the required parameter 'url' is set
+      if (url === undefined || url === null) {
+        throw new Error("Missing the required parameter 'url' when calling addRacunRacunPost");
+      }
+
+      let pathParams = {
+      };
+      let queryParams = {
+        'url': url
+      };
+      let headerParams = {
+      };
+      let formParams = {
+      };
+
+      let authNames = ['OAuth2PasswordBearer'];
+      let contentTypes = [];
+      let accepts = ['application/json'];
+      let returnType = Object;
+      return this.apiClient.callApi(
+        '/racun/', 'POST',
+        pathParams, queryParams, headerParams, formParams, postBody,
+        authNames, contentTypes, accepts, returnType, null, callback
+      );
+    }
+
+    /**
      * Callback function to receive the result of the getRacunAllRacunAllGet operation.
      * @callback module:api/RacunApi~getRacunAllRacunAllGetCallback
      * @param {String} error Error message, if any.

@@ -4,9 +4,7 @@ import React, {useEffect, useState} from 'react'
 import MapView, {Callout} from 'react-native-maps'
 import {Marker} from 'react-native-maps'
 
-var RacuniAPI = require('RacuniAPI');
-
-const ProdavnicaApi = new RacuniAPI.ProdavnicaApi()
+const api = require("../API/RacuniAPI").getInstance();
 
 const MapScreen = (Token) => {
   const [selected, setSelected] = React.useState("")
@@ -17,7 +15,7 @@ const MapScreen = (Token) => {
   // Ucitavanje prodavnica sa API-ja i punjenje lista
   useEffect(() => {
     // API poziv
-    ProdavnicaApi.getProdavnicaByPibProdavnicaAllGet(
+    api.Prodavnica.getProdavnicaByPibProdavnicaAllGet(
       (error, data, response)=>{
         // Podatci za debugging
         setRawData([data])

@@ -153,6 +153,7 @@ Class | Method | HTTP request | Description
 *FastApi.ProdavnicaApi* | [**getProdavnicaByIdProdavnicaIdIdGet**](docs/ProdavnicaApi.md#getProdavnicaByIdProdavnicaIdIdGet) | **GET** /prodavnica/id/{id} | Get Prodavnica By Id
 *FastApi.ProdavnicaApi* | [**getProdavnicaByPibProdavnicaAllGet**](docs/ProdavnicaApi.md#getProdavnicaByPibProdavnicaAllGet) | **GET** /prodavnica/all | Get Prodavnica By Pib
 *FastApi.ProdavnicaApi* | [**getProdavnicaByPibProdavnicaPibPibGet**](docs/ProdavnicaApi.md#getProdavnicaByPibProdavnicaPibPibGet) | **GET** /prodavnica/pib/{pib} | Get Prodavnica By Pib
+*FastApi.RacunApi* | [**addRacunRacunPost**](docs/RacunApi.md#addRacunRacunPost) | **POST** /racun/ | Add Racun
 *FastApi.RacunApi* | [**getRacunAllRacunAllGet**](docs/RacunApi.md#getRacunAllRacunAllGet) | **GET** /racun/all | Get Racun All
 *FastApi.RacunApi* | [**getRacunAllUrlRacunAllUrlGet**](docs/RacunApi.md#getRacunAllUrlRacunAllUrlGet) | **GET** /racun/all/url | Get Racun All Url
 *FastApi.RacunApi* | [**getRacunByIdRacunIdIdGet**](docs/RacunApi.md#getRacunByIdRacunIdIdGet) | **GET** /racun/id/{id} | Get Racun By Id

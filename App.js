@@ -13,7 +13,6 @@ global.atob = decode;
 }
 
 const Stack = createNativeStackNavigator()
-//const APIKey = "AIzaSyA4cPpI8vEtuH7XsehicnxaJVlTGo2Cs4E"
 
 export default function App() {
   return (
