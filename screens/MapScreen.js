@@ -3,12 +3,10 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import React, {useEffect, useState} from 'react'
 import MapView, {Callout} from 'react-native-maps'
 import {Marker} from 'react-native-maps'
-import apiExporter from '../API/apiExporter'
 
-const api = apiExporter
+const api = require("../API/RacuniAPI").getInstance();
 
-const MapScreen = () => {
-
+const MapScreen = (Token) => {
   const [selected, setSelected] = React.useState("")
   const [markers, setMarkers] = React.useState([])
   const [rawData, setRawData] = React.useState([])
@@ -17,38 +15,39 @@ const MapScreen = () => {
   // Ucitavanje prodavnica sa API-ja i punjenje lista
   useEffect(() => {
     // API poziv
-    api.getProdavnicaAll()
-    .then((res)=>{
-      // Podatci za debugging
-      setRawData([res])
-
-      // Ciscenje lista
-      setListBoxData([])
-      setMarkers([])
-
-      // Obrada dobijenih prodavnica
-      res.forEach(element => {
-        var listBoxObject = {}
-        var markersObject = {}
-
-        // Objekat za DropDown listu prodavnica
-        listBoxObject["key"] = element['id'].toString()
-        listBoxObject["value"] = element['naziv']
-        listBoxData.push(listBoxObject)
-
-        // Objekat za marker na mapi
-        markersObject['latitude'] = element['x']
-        markersObject['longitude'] = element['y']
-        markersObject['naziv'] = element['naziv'].toString()
-        markersObject['grad'] = element['grad'].toString()
-        markersObject['adresa'] = element['adresa'].toString()
-        markers.push(markersObject)
-      })
-
-      // Pozivanje set metoda da bi se izazvalo ponovno crtanje
-      setListBoxData(listBoxData)
-      setMarkers(markers)
-    })
+    api.Prodavnica.getProdavnicaByPibProdavnicaAllGet(
+      (error, data, response)=>{
+        // Podatci za debugging
+        setRawData([data])
+  
+        // Ciscenje lista
+        setListBoxData([])
+        setMarkers([])
+  
+        // Obrada dobijenih prodavnica
+        data.forEach(element => {
+          var listBoxObject = {}
+          var markersObject = {}
+  
+          // Objekat za DropDown listu prodavnica
+          listBoxObject["key"] = element['id'].toString()
+          listBoxObject["value"] = element['naziv']
+          listBoxData.push(listBoxObject)
+  
+          // Objekat za marker na mapi
+          markersObject['latitude'] = element['x']
+          markersObject['longitude'] = element['y']
+          markersObject['naziv'] = element['naziv'].toString()
+          markersObject['grad'] = element['grad'].toString()
+          markersObject['adresa'] = element['adresa'].toString()
+          markers.push(markersObject)
+        })
+  
+        // Pozivanje set metoda da bi se izazvalo ponovno crtanje
+        setListBoxData(listBoxData)
+        setMarkers(markers)
+      }
+    )
   },[])
 
   return (

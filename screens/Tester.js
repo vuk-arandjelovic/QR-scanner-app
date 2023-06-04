@@ -1,7 +1,5 @@
 import { StyleSheet, Text, ScrollView, View } from 'react-native'
 import React, {useState,useEffect} from 'react'
-import apiExporter from '../API/apiExporter'
-const api = apiExporter
 
 const Tester = (Token) => {
   const logInToken = Token.route.params

@@ -2,9 +2,10 @@ import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/core'
 
-const HomeScreen = (Token) => {
-  const logInToken = Token.route.params.access_token
-  console.log(logInToken)
+const api = require("../API/RacuniAPI").getInstance();
+
+const HomeScreen = () => {
+  console.log(api.accessToken)
   const navigation = useNavigation()
 
   const screenQueryMenu = () => {
@@ -17,7 +18,7 @@ const HomeScreen = (Token) => {
     navigation.navigate('Scanner')
   }
   const screenTester = () => {
-    navigation.navigate('Tester',logInToken)
+    navigation.navigate('Tester', Token)
   }
 
   return (
