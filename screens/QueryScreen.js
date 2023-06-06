@@ -60,6 +60,7 @@ const QueryScreen = () => {
               {racun['artikli'].map(artikal =>
                 <View style={styles.artikal}>
                   <Text>{artikal['naziv']}</Text>
+                  <Text>{artikal['kolicina']}</Text>
                   <Text>{artikal['cena']} rsd</Text>
                 </View>
               )}

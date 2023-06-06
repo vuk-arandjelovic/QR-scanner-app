@@ -34,11 +34,11 @@ const HomeScreen = () => {
               Map View
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={screenTester} style={styles.button}>
+          {/* <TouchableOpacity onPress={screenTester} style={styles.button}>
             <Text style={styles.buttonText}>
               Tester
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
       </View>
       <View style={styles.containerBottom}>
           <TouchableOpacity onPress={screenScanner} style={styles.buttonScanner}>
