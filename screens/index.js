@@ -1,13 +1,10 @@
+import WelcomeScreen_ from "./WelcomeScreen"
 import LoginScreen_ from "./LoginScreen";
-import HomeScreen_ from "./HomeScreen";
-import MapScreen_ from "./MapScreen";
-import QueryScreen_ from "./QueryScreen";
-import ScannerScreen_ from "./ScannerScreen";
-import Tester_ from "./Tester";
+import RegisterScreen_ from "./RegisterScreen"
+import HomeNavigator_ from "./HomeNavigator"
 
+export const WelcomeScreen = WelcomeScreen_
 export const LoginScreen = LoginScreen_
-export const HomeScreen = HomeScreen_
-export const MapScreen = MapScreen_
-export const QueryScreen = QueryScreen_
-export const ScannerScreen = ScannerScreen_
-export const Tester = Tester_
+export const RegisterScreen = RegisterScreen_
+export const HomeNavigator = HomeNavigator_
+

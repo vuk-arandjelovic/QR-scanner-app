@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+// import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ScannerScreen, MapScreen, QueryScreen, LoginScreen, HomeScreen, Tester } from './screens';
+import { LoginScreen, WelcomeScreen, RegisterScreen, HomeNavigator } from './screens';
 import {decode, encode} from 'base-64'
 
 if (!global.btoa) {
@@ -13,17 +14,16 @@ global.atob = decode;
 }
 
 const Stack = createNativeStackNavigator()
+// const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen options={{headerShown:false}} name="Login" component={LoginScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Query" component={QueryScreen} />
-        <Stack.Screen name="Map" component={MapScreen} />
-        <Stack.Screen name="Scanner" component={ScannerScreen} />
-        <Stack.Screen name="Tester" component={Tester} />
+      <Stack.Navigator initialRouteName="Welcome" backBehavior="firstRoute">
+        <Stack.Screen options={{headerShown:false}} name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen options={{headerShown:false}} name="Home" component={HomeNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );

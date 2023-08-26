@@ -5,43 +5,13 @@ import { useNavigation } from '@react-navigation/core'
 import apiExporter from '../API/apiExporter'
 const api = apiExporter
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   const navigation = useNavigation()
-  const [authToken, setAuthToken] = useState()
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
-  if(authToken !== undefined){
-    setAuthToken(undefined)
-  }
 
-  async function handleLogin(){
-    // try{
-    //     const logInToken = await api.postLogInToken(email,password)
-    //     // console.log("Provere")
-    //     // console.log(logInToken)
-    //     // console.log(logInToken?.access_token)
-    //     // console.log(typeof(logInToken?.access_token))
-    //     // console.log("Gotove Provere")
-    //     if(logInToken !== undefined){
-    //         setAuthToken(logInToken)
-    //         navigation.navigate('Home',logInToken)
-    //     }
-    // }catch(err){
-    //     // console.log(err)
-    //     if(err.response.status == 422){
-    //         console.log("Error 422... :)")
-    //         return
-    //     }
-    //     // console.log(err)
-    //     // console.log(err.response.data)
-    //     // console.log(err.response.status)
-    //     // console.log(err.response.headers)
-    //     alert("Code " + err.response.status + ": " +err.response.data.detail)
-    //     if(logInToken?.access_token == undefined){
-    //         return
-    //     }
-    // }
-        navigation.navigate('Home')
+  async function handleRegister(){
+        navigation.navigate('Welcome')
   }
 
   return (
@@ -67,17 +37,17 @@ const LoginScreen = () => {
         </View>
         <View style={styles.buttonContainer}>
             <TouchableOpacity
-                onPress={handleLogin}
-                style={styles.button}
+                onPress={handleRegister}
+                style={[styles.button, styles.buttonOutline]}
             >
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonOutlineText}>Register</Text>
             </TouchableOpacity>
         </View>
     </KeyboardAvoidingView>
   )
 }
 
-export default LoginScreen
+export default RegisterScreen
 
 const styles = StyleSheet.create({
     container: {
