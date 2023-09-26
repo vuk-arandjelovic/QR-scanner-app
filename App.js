@@ -13,18 +13,20 @@ if (!global.atob) {
 global.atob = decode;
 }
 
-const Stack = createNativeStackNavigator()
+const Welcome = createNativeStackNavigator()
 // const Drawer = createDrawerNavigator();
 
 export default function App() {
+const navOptions = {headerTintColor:"#fafafa",headerStyle:{backgroundColor:"#0782F9"}}
+  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome" backBehavior="firstRoute">
-        <Stack.Screen options={{headerShown:false}} name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen options={{headerShown:false}} name="Home" component={HomeNavigator} />
-      </Stack.Navigator>
+      <Welcome.Navigator initialRouteName="Welcome" backBehavior="firstRoute" screenOptions={{cardStyle:{backgroundColor:"#0782F9"}}}>
+        <Welcome.Screen options={{headerShown:false}} name="Welcome" component={WelcomeScreen} />
+        <Welcome.Screen options={navOptions} name="Login" component={LoginScreen} />
+        <Welcome.Screen options={navOptions} name="Register" component={RegisterScreen} />
+        <Welcome.Screen options={{headerShown:false}} name="Home" component={HomeNavigator} />
+      </Welcome.Navigator>
     </NavigationContainer>
   );
 }

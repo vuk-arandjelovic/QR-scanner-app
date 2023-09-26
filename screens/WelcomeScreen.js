@@ -27,15 +27,15 @@ const WelcomeScreen = () => {
         <View style={styles.buttonContainer}>
             <TouchableOpacity
                 onPress={navigateLogin}
-                style={styles.button}
+                style={[styles.button, styles.buttonOutline]}
             >
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonOutlineText}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={navigateRegister}
-                style={[styles.button, styles.buttonOutline]}
+                style={[styles.button, styles.button]}
             >
-                <Text style={styles.buttonOutlineText}>Register</Text>
+                <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
         </View>
     </KeyboardAvoidingView>
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: "#0782F9",
     },
     logoContainer:{
       width: '75%',
@@ -72,7 +73,9 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 15,
         marginTop: 5,
-        alignItems: 'center'
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: "#FAFAFA",
     },
     buttonOutline: {
         backgroundColor: 'white',

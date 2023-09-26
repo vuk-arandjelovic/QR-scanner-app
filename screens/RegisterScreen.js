@@ -38,9 +38,9 @@ const RegisterScreen = () => {
         <View style={styles.buttonContainer}>
             <TouchableOpacity
                 onPress={handleRegister}
-                style={[styles.button, styles.buttonOutline]}
+                style={styles.button}
             >
-                <Text style={styles.buttonOutlineText}>Register</Text>
+                <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
         </View>
     </KeyboardAvoidingView>
@@ -77,10 +77,11 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     buttonContainer: {
-        width: '60%',
+        width: '80%',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 40,
+        marginTop: 20,
+        marginBottom: 20,
     },
     button: {
         backgroundColor: '#0782F9',

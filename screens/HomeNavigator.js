@@ -1,29 +1,29 @@
-import { View, Text } from 'react-native'
 import {  HomeScreen,
   MapScreen,
-  // ScannerScreen,
   ProfileScreen,
   QueryScreen,
   GuaranteeScreen,
-  Tester, } from "./screens-home" 
-import {  WelcomeScreen  } from "../screens"
+  Tester,
+  ScannerScreen, } from "./screens-home" 
+// import {  WelcomeScreen  } from "../screens"
 import {  createDrawerNavigator  } from '@react-navigation/drawer';
 
-const Drawer = createDrawerNavigator();
+const Home = createDrawerNavigator();
 
 export default function HomeNavigation() {
+  const navOptions = {headerTintColor:"#fafafa",headerStyle:{backgroundColor:"#0782F9"}}
+
 return (
-
-  <Drawer.Navigator initialRouteName="Home" backBehavior="firstRoute">
-    <Drawer.Screen name="Home" component={HomeScreen} />
-    <Drawer.Screen name="Map" component={MapScreen} />
-    {/* <Drawer.Screen options={{headerShown:false}} name="Scanner" component={ScannerScreen} /> */}
-    <Drawer.Screen name="Profile" component={ProfileScreen} />
-    <Drawer.Screen name="Query" component={QueryScreen} />
-    <Drawer.Screen name="Guarantee" component={GuaranteeScreen} />
-    <Drawer.Screen name="Tester" component={Tester} />
-    <Drawer.Screen options={{headerShown:false}} name="Welcome" component={WelcomeScreen} style={{margin:'auto'}} />
-  </Drawer.Navigator>
-
+  <Home.Navigator initialRouteName="Home" backBehavior="firstRoute">
+    <Home.Screen name="Home" component={HomeScreen} options={navOptions} />
+    <Home.Screen name="Map" component={MapScreen} options={navOptions} />
+    <Home.Screen options={{headerShown:false, drawerItemStyle:{display:'none'}}} name="Scanner" component={ScannerScreen} />
+    <Home.Screen name="Profile" component={ProfileScreen} options={navOptions} />
+    <Home.Screen name="Query" component={QueryScreen} options={navOptions} />
+    <Home.Screen name="Guarantee" component={GuaranteeScreen} options={navOptions} />
+    <Home.Screen name="Tester" component={Tester} options={navOptions} />
+    {/* <Drawer.Screen name="Scanner" component={ScannerScreen} /> */}
+    {/* <Drawer.Screen options={{headerShown:false, drawerItemStyle:{marginTop:'150%'}}} name="Welcome" component={WelcomeScreen} style={{margin:'auto'}} /> */}
+  </Home.Navigator>
 );
 }

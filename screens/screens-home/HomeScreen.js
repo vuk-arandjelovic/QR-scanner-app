@@ -12,6 +12,7 @@ const HomeScreen = () => {
   // const logInToken = Token.route.params.access_token
   // console.log(logInToken)
   const navigation = useNavigation()
+  const username = "Tester"
 
   const screenQueryMenu = () => {
     navigation.navigate('Query')
@@ -31,21 +32,9 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.containerTop}>
-          <TouchableOpacity onPress={screenQueryMenu} style={styles.button}>
-            <Text style={styles.buttonText}>
-              Your Data
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={screenMap} style={styles.button}>
-            <Text style={styles.buttonText}>
-              Map View
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={screenTester} style={styles.button}>
-            <Text style={styles.buttonText}>
-              Tester
-            </Text>
-          </TouchableOpacity>
+          <Text style={styles.containerTopText}> 
+            Welcome user: {username}!
+          </Text>
       </View>
       <View style={styles.containerBottom}>
           <TouchableOpacity onPress={screenScanner} style={styles.buttonScanner}>
@@ -74,20 +63,18 @@ const styles = StyleSheet.create({
   containerTop: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    width: '80%',
+    backgroundColor:'#fafafa',
+    borderRadius: 15,
+    aspectRatio: 2/1,
+  },
+  containerTopText: {
+    fontSize:24,
   },
   containerBottom: {
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-  },
-  button: {
-    backgroundColor: '#0782F9',
-    width: '80%',
-    padding: 15,
-    borderRadius: 15,
-    marginTop: 15,
-    alignItems: 'center',
   },
   buttonScanner: {
     backgroundColor: '#0782F9',
@@ -98,11 +85,6 @@ const styles = StyleSheet.create({
     paddingTop:15,
     marginBottom: 15,
     alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 16
   },
   buttonScannerText: {
     color: 'white',
