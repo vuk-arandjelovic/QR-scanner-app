@@ -4,8 +4,6 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Alert,
-  Image,
 } from "react-native";
 import React, { useState } from "react";
 import { KeyboardAvoidingView } from "react-native";

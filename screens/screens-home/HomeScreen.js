@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 
@@ -8,6 +8,10 @@ const HomeScreen = () => {
   // console.log(logInToken)
   const navigation = useNavigation();
   const username = "Tester";
+
+  useEffect(() => {
+    localStorage.getItem("token");
+  }, []);
 
   const screenQueryMenu = () => {
     navigation.navigate("Query");
@@ -65,6 +69,9 @@ const styles = StyleSheet.create({
     color: "#0782F9",
   },
   containerBottom: {
+    // borderWidth: 2,
+    // borderColor: "red",
+    padding: 5,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
@@ -73,11 +80,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#0782F9",
     width: "80%",
     aspectRatio: 1 / 1,
-    borderRadius: 15,
+    borderRadius: 10,
     padding: 30,
     paddingTop: 15,
     marginBottom: 15,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   buttonScannerText: {
     color: "white",
@@ -87,7 +102,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     objectFit: "contain",
-    borderRadius: 15,
+    borderRadius: 10,
     height: 250,
     aspectRatio: 1 / 1,
   },

@@ -8,10 +8,10 @@ import apiExporter from "../../API/apiExporter";
 const api = apiExporter;
 
 const MapScreen = () => {
-  const [selected, setSelected] = React.useState("");
-  const [markers, setMarkers] = React.useState([]);
-  const [rawData, setRawData] = React.useState([]);
-  const [listBoxData, setListBoxData] = React.useState([]);
+  const [selected, setSelected] = useState("");
+  const [markers, setMarkers] = useState([]);
+  const [rawData, setRawData] = useState([]);
+  const [listBoxData, setListBoxData] = useState([]);
 
   const mock = [
     {
@@ -206,7 +206,8 @@ const MapScreen = () => {
         <Text style={styles.selectHeader}>Lista prodavnica:</Text>
         <SelectList
           boxStyles={styles.selectList}
-          inputStyles={styles.selectListItem}
+          dropdownItemStyles={styles.selectListItem}
+          dropdownStyles={styles.selectListDropdown}
           setSelected={(val) => setSelected(val)}
           data={listBoxData}
           save="value"
@@ -258,9 +259,32 @@ const styles = StyleSheet.create({
   selectList: {
     width: "100%",
     borderColor: "#0782F9",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   selectListItem: {
     borderColor: "#0782F9",
+    borderBottomWidth: 1,
+  },
+  selectListDropdown: {
+    backgroundColor: "#fff",
+    borderColor: "#0782F9",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   dataBox: {
     width: "100%",
@@ -269,11 +293,20 @@ const styles = StyleSheet.create({
   },
   dataItem: {
     width: "100%",
-    borderColor: "#0782F9",
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 20,
+    // borderColor: "#0782F9",
+    backgroundColor: "#fff",
+    // borderWidth: 1,
+    borderRadius: 10,
+    padding: 15,
     marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   dataText: {
     fontWeight: 600,
