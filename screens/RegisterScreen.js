@@ -24,10 +24,6 @@ const RegisterScreen = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      {/* <Image
-        style={styles.logo}
-        source={require('../assets/racuni_scanner_logo.png')}
-        /> */}
       <Text style={styles.title}>Register</Text>
       <View style={styles.inputContainer}>
         <TextInput
@@ -63,7 +59,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: 700,
+    fontWeight: "700",
     color: "#0782F9",
   },
   inputContainer: {

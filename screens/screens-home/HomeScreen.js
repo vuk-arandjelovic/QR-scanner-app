@@ -9,9 +9,9 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const username = "Tester";
 
-  useEffect(() => {
-    localStorage.getItem("token");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.getItem("token");
+  // }, []);
 
   const screenQueryMenu = () => {
     navigation.navigate("Query");
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   containerTopText: {
     fontSize: 24,
-    fontWeight: 700,
+    fontWeight: "700",
     color: "#0782F9",
   },
   containerBottom: {

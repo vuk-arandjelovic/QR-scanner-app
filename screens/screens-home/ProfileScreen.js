@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   profileData: {},
   textStyle: {
     fontSize: 20,
-    fontWeight: 600,
+    fontWeight: "600",
     marginBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#0782F9",
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   buttonDeleteText: {
     color: "white",
     textAlign: "center",
-    fontWeight: 700,
+    fontWeight: "700",
     fontSize: 16,
   },
 });

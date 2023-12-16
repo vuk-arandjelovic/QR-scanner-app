@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   dataText: {
-    fontWeight: 600,
+    fontWeight: "600",
     marginBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#0782F9",

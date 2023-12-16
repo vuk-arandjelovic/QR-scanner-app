@@ -8,54 +8,55 @@ import {
 import React, { useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
 import { useNavigation } from "@react-navigation/core";
-import apiExporter from "../API/apiExporter";
+import apiExporter from "../API";
 const api = apiExporter;
+import AsyncStorage from "@react-native-async-storage/async-storage";
+// https://react-native-async-storage.github.io/async-storage/docs/usage/
+
+const storeToken = async (value) => {
+  try {
+    await AsyncStorage.setItem("token", value);
+  } catch (e) {
+    // saving error
+  }
+};
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const [authToken, setAuthToken] = useState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  if (authToken !== undefined) {
-    setAuthToken(undefined);
-  }
 
   async function handleLogin() {
-    // try{
-    //     const logInToken = await api.postLogInToken(email,password)
-    //     // console.log("Provere")
-    //     // console.log(logInToken)
-    //     // console.log(logInToken?.access_token)
-    //     // console.log(typeof(logInToken?.access_token))
-    //     // console.log("Gotove Provere")
-    //     if(logInToken !== undefined){
-    //         setAuthToken(logInToken)
-    //         navigation.navigate('Home',logInToken)
-    //     }
-    // }catch(err){
-    //     // console.log(err)
-    //     if(err.response.status == 422){
-    //         console.log("Error 422... :)")
-    //         return
-    //     }
-    //     // console.log(err)
-    //     // console.log(err.response.data)
-    //     // console.log(err.response.status)
-    //     // console.log(err.response.headers)
-    //     alert("Code " + err.response.status + ": " +err.response.data.detail)
-    //     if(logInToken?.access_token == undefined){
-    //         return
-    //     }
+    // try {
+    //   const logInToken = await api.postLogInToken(email, password);
+    //   // console.log("Provere")
+    //   // console.log(logInToken)
+    //   // console.log(logInToken?.access_token)
+    //   // console.log(typeof(logInToken?.access_token))
+    //   // console.log("Gotove Provere")
+    //   storeToken(logInToken);
+    //   navigation.navigate("LoggedIn");
+    // } catch (err) {
+    //   // console.log(err)
+    //   if (err.response.status == 422) {
+    //     console.log("Error 422... :)");
+    //     return;
+    //   }
+    //   // console.log(err)
+    //   // console.log(err.response.data)
+    //   // console.log(err.response.status)
+    //   // console.log(err.response.headers)
+    //   alert("Code " + err.response.status + ": " + err.response.data.detail);
+    //   if (logInToken?.access_token == undefined) {
+    //     return;
+    //   }
     // }
-    navigation.navigate("Home");
+
+    navigation.navigate("LoggedIn");
   }
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      {/* <Image
-        style={styles.logo}
-        source={require('../assets/racuni_scanner_logo.png')}
-        /> */}
       <Text style={styles.title}>LogIn</Text>
       <View style={styles.inputContainer}>
         <TextInput
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: 700,
+    fontWeight: "700",
     color: "#0782F9",
   },
   inputContainer: {
