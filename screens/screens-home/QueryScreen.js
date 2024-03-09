@@ -15,12 +15,11 @@ const QueryScreen = () => {
   const [rawData, setRawData] = useState([]);
 
   useEffect(() => {
-    // api
-    //   .getAppVersion()
-    //   // api.getProdavnicaAll()
-    //   .then((res) => {
-    //     setRawData([res]);
-    //   });
+    // api;
+    // .getAppVersion()
+    api.getRacuniAll().then((res) => {
+      setRawData([res]);
+    });
   }, []);
 
   const handleFilter = () => {
@@ -54,7 +53,19 @@ const QueryScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {/* map */}
+        {/* {rawData.map((item, index) => (
+          <TouchableOpacity
+            style={styles.contentItem}
+            key={index}
+            onPress={() => handleDetails(item.id)}
+          >
+            <View>
+              <Text style={{ fontSize: 25 }}>{item.naziv}</Text>
+              <Text>{item.date}</Text>
+            </View>
+            <Text style={{ fontSize: 20 }}>{item.amount}</Text>
+          </TouchableOpacity>
+        ))} */}
         <TouchableOpacity style={styles.contentItem}>
           <View>
             <Text style={{ fontSize: 25 }}>Maxi Delhaize</Text>

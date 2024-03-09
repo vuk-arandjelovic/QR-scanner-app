@@ -6,9 +6,9 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 // ###########################################################
 // Returns the current app version
 export const postAddURL = async (recieptURL) => {
-  const url = `${API_URL}/racun/add?url=${recieptURL}`;
+  const url = `${API_URL}/racun/?url=${recieptURL}`;
   console.log(url);
-  const response = await axios.get(url);
+  const response = await axios.post(url);
   if (response?.data !== undefined) return response.data;
 };
 // ###########################################################
@@ -22,5 +22,6 @@ export const postLogInToken = async (username, password) => {
     password: password,
     grant_type: "password",
   });
-  if (response?.data !== undefined) return response.data;
+  // console.log(response);
+  if (response?.data !== undefined) return response.data.access_token;
 };

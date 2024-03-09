@@ -1,37 +1,57 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import apiExporter from "../../API";
 
-// const HomeScreen = (Token) => {
 const HomeScreen = () => {
-  // const logInToken = Token.route.params.access_token
-  // console.log(logInToken)
   const navigation = useNavigation();
   const username = "Tester";
-
+  // const checkToken = async () => {
+  //   try {
+  //     await AsyncStorage.getItem("token");
+  //   } catch (e) {
+  //     // saving error
+  //     alert("error checking token, loging out");
+  //     navigation.navigate("Log Out");
+  //   }
+  // };
   // useEffect(() => {
-  //   localStorage.getItem("token");
+  //   // localStorage.getItem("token");
   // }, []);
-
-  const screenQueryMenu = () => {
-    navigation.navigate("Query");
-  };
-  const screenMap = () => {
-    navigation.navigate("Map");
-  };
+  // const screenQueryMenu = () => {
+  //   navigation.navigate("Query");
+  // };
+  // const screenMap = () => {
+  //   navigation.navigate("Map");
+  // };
+  // const screenTester = () => {
+  //   // navigation.navigate('Tester',logInToken)
+  //   // navigation.navigate('Tester')
+  //   console.log("Tester currently disabled");
+  // };
   const screenScanner = () => {
     navigation.navigate("Scanner");
   };
-  const screenTester = () => {
-    // navigation.navigate('Tester',logInToken)
-    // navigation.navigate('Tester')
-    console.log("Tester currently disabled");
+  const getUsername = () => {
+    return AsyncStorage.getItem("token")
+      .then((token) => {
+        return apiExporter.getUserData(token);
+      })
+      .then((user) => {
+        console.log(user);
+        return user?.username;
+      })
+      .catch((error) => {
+        console.error("Error fetching username:", error);
+        return username;
+      });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.containerTop}>
-        <Text style={styles.containerTopText}>Welcome {username}!</Text>
+        {/* <Text style={styles.containerTopText}>Welcome {getUsername()}!</Text> */}
       </View>
       <View style={styles.containerBottom}>
         <TouchableOpacity onPress={screenScanner} style={styles.buttonScanner}>

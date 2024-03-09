@@ -2,7 +2,7 @@ import axios from "axios";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // ###########################################################
-// App Version && URL List
+// App Version && URL List && User
 // ###########################################################
 // Returns the current app version
 export const getAppVersion = async () => {
@@ -15,6 +15,20 @@ export const getUrlList = async () => {
   const url = `${API_URL}/url_list`;
   const response = await axios.get(url);
   if (response?.data !== undefined) return response.data;
+};
+// Returns a single user info
+export const getUserData = async (token) => {
+  const url = `${API_URL}/user/me/`;
+  const headers = {
+    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+  };
+  try {
+    const response = await axios.get(url, { headers });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error; // Rethrow the error to handle it in the calling code
+  }
 };
 // ###########################################################
 // Requests that return whole tables or columns

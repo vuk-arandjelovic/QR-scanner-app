@@ -1,6 +1,8 @@
 // Get Request Imports
-import { getAppVersion, 
+import {
+  getAppVersion,
   getUrlList,
+  getUserData,
   getProdavnicaAll,
   getArtikalAll,
   getArtikalCenaAll,
@@ -11,14 +13,16 @@ import { getAppVersion,
   getArtikalByNazivAndProdavnicaId,
   getArtikalByNaziv,
   getArtikalCenaById,
-  getRacunById } from "./APIRequests/apiGetRequests";
+  getRacunById,
+} from "./APIRequests/apiGetRequests";
 // Post Request Imports
-import { postAddURL,
-  postLogInToken } from "./APIRequests/apiPostRequests";
+import { postAddURL, postLogInToken } from "./APIRequests/apiPostRequests";
 
 // Export
-export default { getAppVersion,
+export default {
+  getAppVersion,
   getUrlList,
+  getUserData,
   getProdavnicaAll,
   getArtikalAll,
   getArtikalCenaAll,
@@ -32,4 +36,4 @@ export default { getAppVersion,
   getRacunById,
   postAddURL,
   postLogInToken,
- }
+};

@@ -16,8 +16,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const storeToken = async (value) => {
   try {
     await AsyncStorage.setItem("token", value);
+    return true; // Return true if storing is successful
   } catch (e) {
-    // saving error
+    console.error(e);
+    alert("Error saving token");
+    return false; // Return false if storing fails
   }
 };
 
@@ -27,32 +30,29 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   async function handleLogin() {
-    // try {
-    //   const logInToken = await api.postLogInToken(email, password);
-    //   // console.log("Provere")
-    //   // console.log(logInToken)
-    //   // console.log(logInToken?.access_token)
-    //   // console.log(typeof(logInToken?.access_token))
-    //   // console.log("Gotove Provere")
-    //   storeToken(logInToken);
-    //   navigation.navigate("LoggedIn");
-    // } catch (err) {
-    //   // console.log(err)
-    //   if (err.response.status == 422) {
-    //     console.log("Error 422... :)");
-    //     return;
-    //   }
-    //   // console.log(err)
-    //   // console.log(err.response.data)
-    //   // console.log(err.response.status)
-    //   // console.log(err.response.headers)
-    //   alert("Code " + err.response.status + ": " + err.response.data.detail);
-    //   if (logInToken?.access_token == undefined) {
-    //     return;
-    //   }
-    // }
-
-    navigation.navigate("LoggedIn");
+    try {
+      const logInToken = await api.postLogInToken(email, password);
+      if (logInToken) {
+        // Attempt to store the token
+        const tokenStored = await storeToken(logInToken);
+        if (tokenStored) {
+          // Navigate to "LoggedIn" screen only after token is stored
+          navigation.navigate("LoggedIn");
+        } else {
+          console.error("Token storage failed");
+          // Optionally show an alert or handle the failure as needed
+        }
+      } else {
+        console.log("No token received after login.");
+      }
+    } catch (err) {
+      if (err.response && err.response.status === 422) {
+        alert("Please fill in both fields.");
+        console.log("Error 422... :)");
+        return;
+      }
+      alert("Code " + err.response.status + ": " + err.response.data.detail);
+    }
   }
 
   return (

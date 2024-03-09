@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import apiExporter from "../../API";
 
 const ScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -45,7 +46,10 @@ const ScannerScreen = () => {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    console.log(
+      `Bar code with type ${type} and data ${data} has been scanned!`
+    );
+    apiExporter.postAddURL(data);
   };
 
   if (hasPermission === null) {
@@ -146,7 +150,6 @@ const styles = StyleSheet.create({
   },
 });
 export default ScannerScreen;
-
 
 // STARI KOD, RADI ALI NEMA ANIMACIJE - NEDOVRSEN ZBOG DUGMICA
 //   return (
