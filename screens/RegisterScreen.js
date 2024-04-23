@@ -4,8 +4,6 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Alert,
-  Image,
 } from "react-native";
 import React, { useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
@@ -15,11 +13,29 @@ const api = apiExporter;
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleRegister() {
-    navigation.navigate("Welcome");
+    try {
+      const registered = await api.postRegister(username, password);
+      if (registered) {
+        navigation.navigate("Welcome");
+        alert("Registration successful!");
+      } else {
+        alert("Registration failed.");
+      }
+    } catch (err) {
+      console.log(err);
+      if (err?.response && err?.response?.status === 422) {
+        alert("Please fill in both fields.");
+        console.log("Error 422... :)");
+        return;
+      }
+      alert(
+        "Code " + err?.response?.status + ": " + err?.response?.data?.detail
+      );
+    }
   }
 
   return (
@@ -27,9 +43,9 @@ const RegisterScreen = () => {
       <Text style={styles.title}>Register</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="E-mail"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          placeholder="Username"
+          value={username}
+          onChangeText={(text) => setUsername(text)}
           style={styles.input}
         />
         <TextInput

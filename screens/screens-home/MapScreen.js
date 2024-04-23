@@ -12,6 +12,7 @@ const MapScreen = () => {
   const [markers, setMarkers] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [listBoxData, setListBoxData] = useState([]);
+  const [rawDataCopy, setRawDataCopy] = useState([]);
 
   const mock = [
     {
@@ -111,7 +112,7 @@ const MapScreen = () => {
     // // API poziv
     // api.getProdavnicaAll().then((res) => {
     //   // Podatci za debugging
-    //   setRawData([res]);
+    //   setRawData(res);
 
     //   // Ciscenje lista
     //   setListBoxData([]);
@@ -141,6 +142,7 @@ const MapScreen = () => {
     //   setMarkers(markers);
     // });
     setRawData(mock);
+    setRawDataCopy(mock);
     setListBoxData([]);
     setMarkers([]);
 
@@ -149,20 +151,33 @@ const MapScreen = () => {
       var markersObject = {};
 
       listBoxObject["key"] = element["id"].toString();
-      listBoxObject["value"] = element["naziv"];
-      listBoxData.push(listBoxObject);
+      listBoxObject["value"] = element["naziv"].slice(8);
+      listBoxObject["pib"] = element["pib"];
+      if (listBoxData.find((pib) => pib.pib === element["pib"])) {
+      } else {
+        listBoxData.push(listBoxObject);
+      }
 
       markersObject["latitude"] = element["x"];
       markersObject["longitude"] = element["y"];
       markersObject["naziv"] = element["naziv"].toString();
       markersObject["grad"] = element["grad"].toString();
       markersObject["adresa"] = element["adresa"].toString();
+      markersObject["pib"] = element["pib"];
       markers.push(markersObject);
     });
 
     setListBoxData(listBoxData);
     setMarkers(markers);
   }, []);
+
+  const handleSelect = () => {
+    setRawDataCopy(
+      rawDataCopy.map((item) => {
+        item.pib === selected.pib;
+      })
+    );
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -203,7 +218,7 @@ const MapScreen = () => {
           ))}
       </MapView>
       <View style={styles.selectBox}>
-        <Text style={styles.selectHeader}>Lista prodavnica:</Text>
+        <Text style={styles.selectHeader}>Izaberi Firmu:</Text>
         <SelectList
           boxStyles={styles.selectList}
           dropdownItemStyles={styles.selectListItem}
@@ -211,13 +226,14 @@ const MapScreen = () => {
           setSelected={(val) => setSelected(val)}
           data={listBoxData}
           save="value"
+          onSelect={handleSelect}
         />
       </View>
       <View style={styles.dataBox}>
-        {!rawData?.length ? (
+        {!rawDataCopy?.length ? (
           <Text style={{ textAlign: "center" }}>No Data</Text>
         ) : (
-          rawData?.map((item, index) => {
+          rawDataCopy?.map((item, index) => {
             return (
               <View key={index} style={styles.dataItem}>
                 <Text style={styles.dataText}>Naziv: {item?.naziv}</Text>
@@ -229,7 +245,6 @@ const MapScreen = () => {
           })
         )}
       </View>
-      {/* <Text>{JSON.stringify(rawData, 0, 4)}</Text> */}
     </ScrollView>
   );
 };

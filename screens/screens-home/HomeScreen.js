@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,52 +6,32 @@ import apiExporter from "../../API";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const username = "Tester";
-  // const checkToken = async () => {
-  //   try {
-  //     await AsyncStorage.getItem("token");
-  //   } catch (e) {
-  //     // saving error
-  //     alert("error checking token, loging out");
-  //     navigation.navigate("Log Out");
-  //   }
-  // };
-  // useEffect(() => {
-  //   // localStorage.getItem("token");
-  // }, []);
-  // const screenQueryMenu = () => {
-  //   navigation.navigate("Query");
-  // };
-  // const screenMap = () => {
-  //   navigation.navigate("Map");
-  // };
-  // const screenTester = () => {
-  //   // navigation.navigate('Tester',logInToken)
-  //   // navigation.navigate('Tester')
-  //   console.log("Tester currently disabled");
-  // };
+  const [username, setUsername] = useState(null); // Initialize username state with null
+  const [loading, setLoading] = useState(true); // Initialize loading state
+  const fetchUsername = async () => {
+    try {
+      const user = await apiExporter.getUserData(); // Assuming this fetches user data from API
+      setUsername(user.username); // Set username state
+    } catch (error) {
+      console.error("Error fetching username:", error);
+    } finally {
+      setLoading(false); // Update loading state when fetching is done (whether successful or not)
+    }
+  };
+  useEffect(() => {
+    fetchUsername(); // Call the fetchUsername function when component mounts
+  }, []);
+
   const screenScanner = () => {
     navigation.navigate("Scanner");
-  };
-  const getUsername = () => {
-    return AsyncStorage.getItem("token")
-      .then((token) => {
-        return apiExporter.getUserData(token);
-      })
-      .then((user) => {
-        console.log(user);
-        return user?.username;
-      })
-      .catch((error) => {
-        console.error("Error fetching username:", error);
-        return username;
-      });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.containerTop}>
-        {/* <Text style={styles.containerTopText}>Welcome {getUsername()}!</Text> */}
+        {!loading && (
+          <Text style={styles.containerTopText}>Welcome {username}!</Text>
+        )}
       </View>
       <View style={styles.containerBottom}>
         <TouchableOpacity onPress={screenScanner} style={styles.buttonScanner}>

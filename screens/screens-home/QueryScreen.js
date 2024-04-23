@@ -4,44 +4,38 @@ import {
   ScrollView,
   View,
   Image,
+  Modal,
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import apiExporter from "../../API/apiExporter";
-import { FlipInEasyX } from "react-native-reanimated";
 const api = apiExporter;
 
 const QueryScreen = () => {
   const [rawData, setRawData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    // api;
-    // .getAppVersion()
-    api.getRacuniAll().then((res) => {
-      setRawData([res]);
+    api.getRacunAll().then((res) => {
+      setRawData(res);
     });
   }, []);
 
   const handleFilter = () => {
+    console.log(rawData);
     alert("triggered filter");
   };
-  const handleDetails = (id) => {};
+  const handleDetails = (item) => {
+    setSelectedItem(item);
+    setIsModalVisible(true);
+    console.log(item);
+  };
 
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
   return (
-    // <View>
-    //   <Text>QueryScreen</Text>
-    //   {/* <Text>{rawData[0].map((item)=>{
-    //     // console.log(item)
-    //     // console.log(item['naziv'])
-    //     return `${item['naziv']}
-    //   })}
-    //   </Text> */}
-    //   <Text>
-    //     {rawData.map((item) => {
-    //       return item["required_version="];
-    //     })}
-    //   </Text>
-    // </View>
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={{ fontSize: 30 }}>Skenirani Racuni:</Text>
@@ -53,41 +47,42 @@ const QueryScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {/* {rawData.map((item, index) => (
+        {rawData.map((item, index) => (
           <TouchableOpacity
             style={styles.contentItem}
             key={index}
-            onPress={() => handleDetails(item.id)}
+            onPress={() => handleDetails(item)}
           >
             <View>
-              <Text style={{ fontSize: 25 }}>{item.naziv}</Text>
-              <Text>{item.date}</Text>
+              <Text style={{ fontSize: 25 }}>{item?.prodavnica?.naziv}</Text>
+              <Text>{item?.pfrVreme}</Text>
             </View>
-            <Text style={{ fontSize: 20 }}>{item.amount}</Text>
+            <Text style={{ fontSize: 20 }}>{item?.ukupanIznos}</Text>
           </TouchableOpacity>
-        ))} */}
-        <TouchableOpacity style={styles.contentItem}>
-          <View>
-            <Text style={{ fontSize: 25 }}>Maxi Delhaize</Text>
-            <Text>30.11.2023</Text>
-          </View>
-          <Text style={{ fontSize: 20 }}>2.342,00 RSD</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.contentItem}>
-          <View>
-            <Text style={{ fontSize: 25 }}>Maxi Delhaize</Text>
-            <Text>30.11.2023</Text>
-          </View>
-          <Text style={{ fontSize: 20 }}>2.342,00 RSD</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.contentItem}>
-          <View>
-            <Text style={{ fontSize: 25 }}>Maxi Delhaize</Text>
-            <Text>30.11.2023</Text>
-          </View>
-          <Text style={{ fontSize: 20 }}>2.342,00 RSD</Text>
-        </TouchableOpacity>
+        ))}
       </View>
+      <Modal visible={isModalVisible} animationType="fade" transparent={true}>
+        <View
+          style={{
+            backgroundColor: "#00000080",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalHeader}>Details</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+            {selectedItem && (
+              <View style={styles.modalContent}>
+                <Text>{selectedItem?.prodavnica?.naziv}</Text>
+                <Text>{selectedItem?.pfrVreme}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -97,8 +92,6 @@ export default QueryScreen;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    // justifyContent: "center",
-    // alignItems: "flex-start",
     marginTop: 20,
   },
   header: {
@@ -140,8 +133,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 10,
-    // borderColor: "#000",
-    // borderWidth: 2,
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: {
@@ -151,5 +142,40 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
     elevation: 6,
+  },
+  modalContainer: {
+    top: 90,
+    height: "75%",
+    width: "90%",
+    alignSelf: "center",
+    // justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  modalHeader: {
+    fontSize: 24,
+    fontWeight: "bold",
+    margin: 15,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: "#007AFF",
+  },
+  modalContent: {
+    padding: 20,
   },
 });

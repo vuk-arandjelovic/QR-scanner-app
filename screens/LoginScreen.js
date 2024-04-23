@@ -26,32 +26,31 @@ const storeToken = async (value) => {
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleLogin() {
     try {
-      const logInToken = await api.postLogInToken(email, password);
+      const logInToken = await api.postLogInToken(username, password);
       if (logInToken) {
-        // Attempt to store the token
         const tokenStored = await storeToken(logInToken);
         if (tokenStored) {
-          // Navigate to "LoggedIn" screen only after token is stored
           navigation.navigate("LoggedIn");
         } else {
           console.error("Token storage failed");
-          // Optionally show an alert or handle the failure as needed
         }
       } else {
         console.log("No token received after login.");
       }
     } catch (err) {
-      if (err.response && err.response.status === 422) {
+      console.log(err);
+      if (err?.response && err?.response?.status === 422) {
         alert("Please fill in both fields.");
-        console.log("Error 422... :)");
         return;
       }
-      alert("Code " + err.response.status + ": " + err.response.data.detail);
+      alert(
+        "Code " + err?.response?.status + ": " + err?.response?.data?.detail
+      );
     }
   }
 
@@ -60,9 +59,9 @@ const LoginScreen = () => {
       <Text style={styles.title}>LogIn</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="E-mail"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          placeholder="Username"
+          value={username}
+          onChangeText={(text) => setUsername(text)}
           style={styles.input}
         />
         <TextInput

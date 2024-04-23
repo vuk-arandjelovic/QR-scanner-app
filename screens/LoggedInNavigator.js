@@ -2,13 +2,13 @@ import {
   HomeScreen,
   MapScreen,
   ProfileScreen,
+  ReceiptScreen,
   QueryScreen,
   GuaranteeScreen,
   Tester,
   ScannerScreen,
   LogOutScreen,
 } from "./screens-home";
-// import {  WelcomeScreen  } from "../screens"
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 const LoggedIn = createDrawerNavigator();
@@ -20,7 +20,17 @@ export default function LoggedInNavigator() {
   };
 
   return (
-    <LoggedIn.Navigator initialRouteName="Home" backBehavior="firstRoute">
+    <LoggedIn.Navigator
+      initialRouteName="Home"
+      backBehavior="firstRoute"
+      screenOptions={{
+        drawerStyle: {
+          borderColor: "#f0f0f0",
+          borderWidth: 5,
+          borderStyle: "solid",
+        },
+      }}
+    >
       <LoggedIn.Screen
         name="Home"
         component={HomeScreen}
@@ -38,6 +48,11 @@ export default function LoggedInNavigator() {
         options={navOptions}
       />
       <LoggedIn.Screen
+        name="Receipts"
+        component={ReceiptScreen}
+        options={navOptions}
+      />
+      <LoggedIn.Screen
         name="Query"
         component={QueryScreen}
         options={navOptions}
@@ -48,13 +63,26 @@ export default function LoggedInNavigator() {
         options={navOptions}
       />
       <LoggedIn.Screen name="Tester" component={Tester} options={navOptions} />
-      {/* <Drawer.Screen name="Scanner" component={ScannerScreen} /> */}
       <LoggedIn.Screen
-        options={{ headerShown: false, drawerItemStyle: { marginTop: "150%" } }}
+        options={{
+          headerShown: false,
+          drawerItemStyle: {
+            // borderColor: "#f0f0f0",
+            // borderWidth: 5,
+            // borderStyle: "solid",
+            // position: "absolute",
+            // width: "93%",
+            // bottom: 50,
+            marginTop: "140%",
+            // justifyContent: "flex-end",
+            // alignSelf: "flex-end",
+          },
+        }}
         name="Log Out"
         component={LogOutScreen}
-        style={{ margin: "auto" }}
+        style={{ alignSelf: "flex-end" }}
       />
     </LoggedIn.Navigator>
   );
+  //marginTop: "140%",
 }

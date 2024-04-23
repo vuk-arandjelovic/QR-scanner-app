@@ -5,21 +5,40 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import apiExporter from "../../API/apiExporter";
+const api = apiExporter;
 
 const ProfileScreen = () => {
+  const [rawData, setRawData] = useState();
+  const [scanned, setScanned] = useState();
+  useEffect(() => {
+    api
+      .getUserData()
+      .then((res) => {
+        setRawData(res);
+      })
+      .then(
+        api.getRacunAll().then((res) => {
+          setScanned(res);
+        })
+      );
+  }, []);
+
   const handleDeleteAccount = () => {
     alert("delete account pressed");
+    console.log(rawData);
+    console.log(scanned);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileBox}>
         <View style={styles.profileData}>
-          <Text style={styles.textStyle}>Username: </Text>
-          <Text style={styles.textStyle}>Password: </Text>
+          <Text style={styles.textStyle}>Username: {rawData?.username}</Text>
+          <Text style={styles.textStyle}>Password: {rawData?.password}</Text>
           <Text style={styles.textStyle}>Stores Visited: </Text>
-          <Text style={styles.textStyle}>Bills Scanned: </Text>
+          <Text style={styles.textStyle}>Bills Scanned: {scanned?.length}</Text>
         </View>
         <TouchableOpacity
           style={styles.buttonDelete}
