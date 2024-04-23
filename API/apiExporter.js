@@ -16,7 +16,11 @@ import {
   getRacunById,
 } from "./APIRequests/apiGetRequests";
 // Post Request Imports
-import { postAddURL, postLogInToken } from "./APIRequests/apiPostRequests";
+import {
+  postAddURL,
+  postLogInToken,
+  postRegister,
+} from "./APIRequests/apiPostRequests";
 
 // Export
 export default {
@@ -36,4 +40,5 @@ export default {
   getRacunById,
   postAddURL,
   postLogInToken,
+  postRegister,
 };
