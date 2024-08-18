@@ -8,14 +8,12 @@ import {
 import React, { useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
 import { useNavigation } from "@react-navigation/core";
-import apiExporter from "../API";
-const api = apiExporter;
-import AsyncStorage from "@react-native-async-storage/async-storage";
-// https://react-native-async-storage.github.io/async-storage/docs/usage/
+import AuthService from "@/services/auth.service";
+import StorageService from "@/services/storage.service";
 
 const storeToken = async (value) => {
   try {
-    await AsyncStorage.setItem("token", value);
+    await StorageService.set("token", value);
     return true; // Return true if storing is successful
   } catch (e) {
     console.error(e);
@@ -26,14 +24,15 @@ const storeToken = async (value) => {
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleLogin() {
     try {
-      const logInToken = await api.postLogInToken(username, password);
-      if (logInToken) {
-        const tokenStored = await storeToken(logInToken);
+      const res = await AuthService.login(email, password);
+      console.log("kita", res);
+      if (res?.status === "success") {
+        const tokenStored = await storeToken(res?.response?.token);
         if (tokenStored) {
           navigation.navigate("LoggedIn");
         } else {
@@ -46,11 +45,10 @@ const LoginScreen = () => {
       console.log(err);
       if (err?.response && err?.response?.status === 422) {
         alert("Please fill in both fields.");
-        return;
-      }
-      alert(
-        "Code " + err?.response?.status + ": " + err?.response?.data?.detail
-      );
+      } else
+        alert(
+          "Code " + err?.response?.status + ": " + err?.response?.data?.detail
+        );
     }
   }
 
@@ -59,9 +57,9 @@ const LoginScreen = () => {
       <Text style={styles.title}>LogIn</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Username"
-          value={username}
-          onChangeText={(text) => setUsername(text)}
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
           style={styles.input}
         />
         <TextInput

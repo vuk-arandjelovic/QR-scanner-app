@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
-  TextInput,
   View,
   TouchableOpacity,
   Image,
   KeyboardAvoidingView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
+import AuthService from "@/services/auth.service";
+import StorageService from "@/services/storage.service";
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -20,6 +21,12 @@ const WelcomeScreen = () => {
     navigation.navigate("Register");
   };
 
+  useEffect(() => {
+    const token = StorageService.get("token");
+    console.log(token);
+    if (token) AuthService.checkSession();
+    console.log(AuthService.checkSession());
+  }, []);
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Image

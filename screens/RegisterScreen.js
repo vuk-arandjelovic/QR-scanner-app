@@ -8,22 +8,28 @@ import {
 import React, { useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
 import { useNavigation } from "@react-navigation/core";
-import apiExporter from "../API/apiExporter";
-const api = apiExporter;
+import AuthService from "@/services/auth.service";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleRegister() {
     try {
-      const registered = await api.postRegister(username, password);
-      if (registered) {
+      const usernameTaken = await AuthService.checkUsername(username);
+      if (usernameTaken?.status === "error") {
+        alert("Username already taken.");
+        return;
+      }
+      const registered = await AuthService.register(username, email, password);
+
+      if (registered?.status === "success") {
         navigation.navigate("Welcome");
         alert("Registration successful!");
       } else {
-        alert("Registration failed.");
+        alert(`Registration failed: ${registered?.message}`);
       }
     } catch (err) {
       console.log(err);
@@ -42,6 +48,12 @@ const RegisterScreen = () => {
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Text style={styles.title}>Register</Text>
       <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={styles.input}
+        />
         <TextInput
           placeholder="Username"
           value={username}
