@@ -1,5 +1,6 @@
 import axios from "axios";
 import { CONFIG } from "../config";
+import StorageService from "./storage.service";
 
 export class RequestService {
   url;
@@ -64,10 +65,16 @@ export class RequestService {
   }
 
   _handleHeaders = (c) => {
+    // const func = StorageService.get("token").then((token) => {
+    //   console.log(token);
+    //   if (token) {
+    //     c.headers["Authorization"] = `Bearer ${token}`;
+    //   }
+    //   return c;
+    // });
     if (CONFIG.auth_token) {
-      c.headers["Authorization"] = `NIKOLA_TOKEN ${CONFIG.auth_token}`;
+      c.headers["Authorization"] = `Bearer ${CONFIG.auth_token}`;
     }
-
     return c;
   };
 

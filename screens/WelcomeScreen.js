@@ -20,12 +20,21 @@ const WelcomeScreen = () => {
   const navigateRegister = () => {
     navigation.navigate("Register");
   };
-
+  const getToken = async () => {
+    const token = JSON.parse(await StorageService.get("token"));
+    return token;
+  };
+  const validateSession = async () => {
+    const token = await getToken();
+    if (token) {
+      const res = await AuthService.checkSession();
+      if (res?.status === "success") {
+        navigation.navigate("LoggedIn");
+      }
+    }
+  };
   useEffect(() => {
-    const token = StorageService.get("token");
-    console.log(token);
-    if (token) AuthService.checkSession();
-    console.log(AuthService.checkSession());
+    validateSession();
   }, []);
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">

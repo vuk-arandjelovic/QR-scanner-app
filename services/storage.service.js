@@ -23,8 +23,17 @@ export class StorageService {
 
   init(storage) {
     if (storage !== undefined) this.storage = storage;
+    // if (!CONFIG.auth_token) {
+    //   console.log("no token found");
+    //   this.setConfigToken(null);
+    // }
   }
-
+  // async setConfigToken(token) {
+  //   console.log("token: ", token);
+  //   if (!token) CONFIG.auth_token = await AsyncStorage.getItem("token");
+  //   else CONFIG.auth_token = token;
+  //   console.log("config token: ", CONFIG.auth_token);
+  // }
   async set(key, value) {
     try {
       await AsyncStorage.setItem(

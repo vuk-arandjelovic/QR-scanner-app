@@ -30,17 +30,19 @@ const LoginScreen = () => {
   async function handleLogin() {
     try {
       const res = await AuthService.login(email, password);
-      console.log("kita", res);
-      if (res?.status === "success") {
-        const tokenStored = await storeToken(res?.response?.token);
-        if (tokenStored) {
-          navigation.navigate("LoggedIn");
-        } else {
-          console.error("Token storage failed");
-        }
-      } else {
+      console.log(res);
+      if (res?.status !== "success") {
         console.log("No token received after login.");
+        return;
       }
+      const tokenStored = await storeToken(
+        JSON.stringify(res?.response?.token)
+      );
+      if (!tokenStored) {
+        console.error("Token storage failed");
+        return;
+      }
+      navigation.navigate("LoggedIn");
     } catch (err) {
       console.log(err);
       if (err?.response && err?.response?.status === 422) {
