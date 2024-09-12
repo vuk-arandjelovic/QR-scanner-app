@@ -65,13 +65,6 @@ export class RequestService {
   }
 
   _handleHeaders = (c) => {
-    // const func = StorageService.get("token").then((token) => {
-    //   console.log(token);
-    //   if (token) {
-    //     c.headers["Authorization"] = `Bearer ${token}`;
-    //   }
-    //   return c;
-    // });
     if (CONFIG.auth_token) {
       c.headers["Authorization"] = `Bearer ${CONFIG.auth_token}`;
     }

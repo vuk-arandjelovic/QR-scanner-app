@@ -33,6 +33,7 @@ const LoginScreen = () => {
       console.log(res);
       if (res?.status !== "success") {
         console.log("No token received after login.");
+        alert("Login failed.");
         return;
       }
       const tokenStored = await storeToken(

@@ -13,28 +13,21 @@ import StorageService from "@/services/storage.service";
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
-
   const navigateLogin = () => {
     navigation.navigate("Login");
   };
   const navigateRegister = () => {
     navigation.navigate("Register");
   };
-  const getToken = async () => {
-    const token = JSON.parse(await StorageService.get("token"));
-    return token;
-  };
-  const validateSession = async () => {
-    const token = await getToken();
-    if (token) {
-      const res = await AuthService.checkSession();
-      if (res?.status === "success") {
-        navigation.navigate("LoggedIn");
-      }
-    }
-  };
   useEffect(() => {
-    validateSession();
+    const checkSession = async () => {
+      const token = JSON.parse(await StorageService.get("token"));
+      if (token) {
+        const res = await AuthService.checkSession(token);
+        if (res?.status === "success") navigation.navigate("LoggedIn");
+      }
+    };
+    checkSession();
   }, []);
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
