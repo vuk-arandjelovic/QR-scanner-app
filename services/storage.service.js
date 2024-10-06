@@ -122,7 +122,7 @@ export class StorageService {
   }
 
   getToken() {
-    return this.storage.get("api_token") || this.token;
+    return this.storage.get("token") || this.token;
   }
 
   get isLoggedIn() {

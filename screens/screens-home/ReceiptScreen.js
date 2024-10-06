@@ -8,23 +8,29 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import apiExporter from "../../API/apiExporter";
-const api = apiExporter;
+import RecieptsService from "@/services/reciepts.service";
+import StoresService from "@/services/stores.service";
 
 const ReceiptScreen = () => {
-  const [rawData, setRawData] = useState([]);
+  const [bills, setBills] = useState([]);
+  const [stores, setStores] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    // api.getRacunAll().then((res) => {
-    //   setRawData(res);
-    // });
-    setRawData(mock);
+    RecieptsService.getReciepts().then((res) => {
+      console.log(res);
+      setBills(res);
+    });
+    StoresService.getStores().then((res) => {
+      console.log(res);
+      setStores(res);
+    });
+    // setBills(mock);
   }, []);
 
   const handleFilter = () => {
-    console.log(rawData);
+    console.log(bills);
     alert("triggered filter");
   };
   const handleDetails = (item) => {
@@ -35,6 +41,13 @@ const ReceiptScreen = () => {
 
   const closeModal = () => {
     setIsModalVisible(false);
+  };
+  const timeFormat = (time) => {
+    return new Date(time).toLocaleString();
+  };
+  const getStoreName = (id) => {
+    const store = stores.find((s) => s?._id === id);
+    return store?.name;
   };
   return (
     <ScrollView style={styles.container}>
@@ -48,17 +61,17 @@ const ReceiptScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {rawData.map((item, index) => (
+        {bills.map((item, index) => (
           <TouchableOpacity
             style={styles.contentItem}
             key={index}
             onPress={() => handleDetails(item)}
           >
-            <View>
-              <Text style={{ fontSize: 25 }}>{item?.firma}</Text>
-              <Text>{item?.pfrVreme}</Text>
+            <View style={{ maxWidth: "75%" }}>
+              <Text style={{ fontSize: 25 }}>{getStoreName(item?.store)}</Text>
+              <Text>{timeFormat(item?.date)}</Text>
             </View>
-            <Text style={{ fontSize: 20 }}>{item?.ukupanIznos}</Text>
+            <Text style={{ fontSize: 20 }}>{item?.total}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -77,8 +90,8 @@ const ReceiptScreen = () => {
             </TouchableOpacity>
             {selectedItem && (
               <View style={styles.modalContent}>
-                <Text>{selectedItem?.prodavnica?.naziv}</Text>
-                <Text>{selectedItem?.pfrVreme}</Text>
+                <Text>{getStoreName(selectedItem?.store)}</Text>
+                <Text>{timeFormat(selectedItem?.date)}</Text>
               </View>
             )}
           </View>
@@ -134,6 +147,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 10,
+    maxHeight: 70,
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: {

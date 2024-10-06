@@ -64,9 +64,12 @@ export class RequestService {
     return this;
   }
 
-  _handleHeaders = (c) => {
+  _handleHeaders = async (c) => {
     if (CONFIG.auth_token) {
       c.headers["Authorization"] = `Bearer ${CONFIG.auth_token}`;
+    } else {
+      const token = await StorageService.get("token");
+      if (token) c.headers["Authorization"] = `Bearer ${token}`;
     }
     return c;
   };

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/core";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import apiExporter from "../../API";
-
+import UserService from "@/services/user.service";
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState(null); // Initialize username state with null
+  const [username, setUsername] = useState("user"); // Initialize username state with null
   const [loading, setLoading] = useState(true); // Initialize loading state
   const fetchUsername = async () => {
     try {
-      const user = await apiExporter.getUserData(); // Assuming this fetches user data from API
-      setUsername(user.username); // Set username state
+      const response = await UserService.getUserData();
+      if (response.response.username) {
+        setUsername(response.response.username);
+      }
     } catch (error) {
       console.error("Error fetching username:", error);
     } finally {

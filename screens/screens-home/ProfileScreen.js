@@ -6,29 +6,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import apiExporter from "../../API/apiExporter";
-const api = apiExporter;
+import UserService from "@/services/user.service";
 
 const ProfileScreen = () => {
   const [rawData, setRawData] = useState();
-  const [scanned, setScanned] = useState();
   useEffect(() => {
-    api
-      .getUserData()
-      .then((res) => {
-        setRawData(res);
-      })
-      .then(
-        api.getRacunAll().then((res) => {
-          setScanned(res);
-        })
-      );
+    UserService.getUserData().then((response) => {
+      setRawData(response.response);
+    });
   }, []);
 
   const handleDeleteAccount = () => {
     alert("delete account pressed");
     console.log(rawData);
-    console.log(scanned);
   };
 
   return (
@@ -36,9 +26,13 @@ const ProfileScreen = () => {
       <View style={styles.profileBox}>
         <View style={styles.profileData}>
           <Text style={styles.textStyle}>Username: {rawData?.username}</Text>
-          <Text style={styles.textStyle}>Password: {rawData?.password}</Text>
-          <Text style={styles.textStyle}>Stores Visited: </Text>
-          <Text style={styles.textStyle}>Bills Scanned: {scanned?.length}</Text>
+          {/* <Text style={styles.textStyle}>Password: {rawData?.password}</Text> */}
+          <Text style={styles.textStyle}>
+            Stores Visited: {rawData?.stores_visited?.length}
+          </Text>
+          <Text style={styles.textStyle}>
+            Bills Scanned: {rawData?.bills?.length}
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.buttonDelete}
@@ -56,7 +50,7 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    minHeight: "100%",
+    // minHeight: "100%",
     justifyContent: "flex-start",
     alignItems: "center",
     marginBottom: 20,
@@ -70,7 +64,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     width: "90%",
-    minHeight: "60%",
+    // minHeight: "60%",
     justifyContent: "space-between",
 
     shadowColor: "#000",
