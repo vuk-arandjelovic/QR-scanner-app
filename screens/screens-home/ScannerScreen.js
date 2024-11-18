@@ -3,15 +3,16 @@ import {
   Text,
   View,
   StyleSheet,
-  Button,
   Animated,
   TouchableOpacity,
   Image,
 } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { useNavigation } from "@react-navigation/core";
+import { Camera, CameraView } from "expo-camera";
 import apiExporter from "../../API";
 
 const ScannerScreen = () => {
+  const navigator = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [animationLineHeight, setAnimationLineHeight] = useState(0);
@@ -34,17 +35,17 @@ const ScannerScreen = () => {
   };
 
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+    const getCameraPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     };
 
-    getBarCodeScannerPermissions();
+    getCameraPermissions();
 
     animateLine();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarcodeScanned = ({ type, data }) => {
     setScanned(true);
     console.log(
       `Bar code with type ${type} and data ${data} has been scanned!`
@@ -60,17 +61,27 @@ const ScannerScreen = () => {
   }
 
   const handleBack = () => {
-    alert("back button pressed");
+    navigator.navigate("Home");
   };
 
   return (
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+      <CameraView
+        onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ["qr"],
+        }}
         style={StyleSheet.absoluteFillObject}
       />
       <View style={styles.overlay}>
-        <View style={styles.unfocusedContainer}></View>
+        <View style={styles.unfocusedContainer}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Image
+              source={require("../../assets/rescan.png")}
+              style={{ width: 50, height: 50 }}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.middleContainer}>
           <View style={styles.unfocusedContainer}></View>
           <View
@@ -147,6 +158,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
   },
 });
 export default ScannerScreen;
