@@ -5,8 +5,9 @@ export class GuaranteeService extends BaseService {
     super("guarantees");
   }
 
-  createGuarantee(billId, itemId, name, expirationDate) {
+  createGuarantee(userId, billId, itemId, name, expirationDate) {
     return this.request.post("/", {
+      user: userId,
       bill: billId,
       item: itemId,
       name: name,

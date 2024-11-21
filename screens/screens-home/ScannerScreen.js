@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { Camera, CameraView } from "expo-camera";
-import apiExporter from "../../API";
+import ScrapeService from "@/services/scrape.service";
+// import apiExporter from "../../API";
 
 const ScannerScreen = () => {
   const navigator = useNavigation();
@@ -50,7 +51,10 @@ const ScannerScreen = () => {
     console.log(
       `Bar code with type ${type} and data ${data} has been scanned!`
     );
-    apiExporter.postAddURL(data);
+    ScrapeService.scrape(data).then((res) => {
+      console.log(res);
+      handleBack();
+    });
   };
 
   if (hasPermission === null) {

@@ -1,5 +1,6 @@
 import { CONFIG } from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
 
 export class StorageService {
   storage;
@@ -120,9 +121,22 @@ export class StorageService {
       console.error(error);
     }
   }
+  async getUserId() {
+    try {
+      const token = await this.getToken();
+      if (!token) return null;
+
+      const decoded = jwtDecode(token);
+      return decoded.id;
+    } catch (error) {
+      console.error("Error getting userId:", error);
+      return null;
+    }
+  }
 
   getToken() {
-    return this.storage.get("token") || this.token;
+    if (CONFIG.auth_token) return CONFIG.auth_token;
+    return this.get("token");
   }
 
   get isLoggedIn() {

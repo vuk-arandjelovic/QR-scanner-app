@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+
 import {
   StyleSheet,
   Text,
@@ -11,8 +13,11 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SelectList } from "react-native-dropdown-select-list";
 import RecieptsService from "@/services/reciepts.service";
+import GuaranteeService from "@/services/guarantee.service";
 import StoresService from "@/services/stores.service";
+import StorageService from "@/services/storage.service";
 import ItemsService from "@/services/items.service";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function GuaranteeScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -25,7 +30,25 @@ export default function GuaranteeScreen() {
   const [receiptItems, setReceiptItems] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
-
+  const [guarantees, setGuarantees] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const getUserId = async () => {
+    try {
+      const userId = await StorageService.getUserId();
+      setUserId(userId);
+    } catch (error) {
+      console.error("Error getting userId:", error);
+    }
+  };
+  const loadGuarantees = async () => {
+    try {
+      const res = await GuaranteeService.getUserGuarantees();
+      setGuarantees(res);
+    } catch (err) {
+      console.error(err);
+      alert("Error loading guarantees");
+    }
+  };
   const onDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
     if (selectedDate) {
@@ -33,9 +56,13 @@ export default function GuaranteeScreen() {
       setExpirationDate(selectedDate.toLocaleDateString());
     }
   };
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getUserId();
+      loadData();
+      loadGuarantees();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
@@ -87,27 +114,44 @@ export default function GuaranteeScreen() {
     };
   };
   const handleAddGuarantee = async () => {
-    if (
-      !selectedReceipt ||
-      !selectedItem ||
-      !guaranteeName ||
-      !expirationDate
-    ) {
+    if (!selectedReceipt || !selectedItem || !guaranteeName || !date) {
       alert("Please fill all fields");
+      return;
+    }
+    if (!userId) {
+      alert("User ID unavailable");
       return;
     }
 
     try {
-      // TODO: Implement guarantee creation
+      await GuaranteeService.createGuarantee(
+        userId,
+        selectedReceipt._id,
+        selectedItem,
+        guaranteeName,
+        date
+      );
       alert("Guarantee added successfully!");
       setModalVisible(false);
       clearForm();
+      setTimeout(() => {
+        loadGuarantees();
+      }, 1000);
     } catch (err) {
       console.error(err);
       alert("Error adding guarantee");
     }
   };
-
+  const handleDelete = async (id) => {
+    try {
+      await GuaranteeService.deleteGuarantee(id);
+      alert("Guarantee deleted successfully!");
+      loadGuarantees();
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting guarantee");
+    }
+  };
   const clearForm = () => {
     setSelectedReceipt(null);
     setSelectedItem(null);
@@ -121,7 +165,22 @@ export default function GuaranteeScreen() {
         <View style={styles.header}>
           <Text style={styles.headerText}>Garancije:</Text>
         </View>
-        <View style={styles.content}>{/* Guarantee cards will go here */}</View>
+        <View style={styles.content}>
+          {guarantees.map((guarantee) => (
+            <View key={guarantee._id} style={styles.guaranteeCard}>
+              <Text style={styles.guaranteeName}>{guarantee.name}</Text>
+              <Text style={styles.guaranteeDate}>
+                Expires: {new Date(guarantee.expiration).toLocaleDateString()}
+              </Text>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDelete(guarantee._id)}
+              >
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
       <TouchableOpacity
@@ -324,5 +383,32 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: "#000",
+  },
+  guaranteeCard: {
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    elevation: 3,
+  },
+  guaranteeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  guaranteeDate: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#ff4444",
+    padding: 8,
+    borderRadius: 5,
+    alignSelf: "flex-end",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
