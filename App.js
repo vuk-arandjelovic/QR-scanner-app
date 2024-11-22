@@ -1,6 +1,8 @@
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 // import { createDrawerNavigator } from '@react-navigation/drawer';
+import { RootSiblingParent } from "react-native-root-siblings";
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   LoginScreen,
@@ -28,34 +30,36 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <Welcome.Navigator
-        initialRouteName="Welcome"
-        backBehavior="firstRoute"
-        screenOptions={{ cardStyle: { backgroundColor: "#0782F9" } }}
-      >
-        <Welcome.Screen
-          options={{ headerShown: false }}
-          name="Welcome"
-          component={WelcomeScreen}
-        />
-        <Welcome.Screen
-          options={navOptions}
-          name="Login"
-          component={LoginScreen}
-        />
-        <Welcome.Screen
-          options={navOptions}
-          name="Register"
-          component={RegisterScreen}
-        />
-        <Welcome.Screen
-          options={{ headerShown: false }}
-          name="LoggedIn"
-          component={LoggedInNavigator}
-        />
-      </Welcome.Navigator>
-    </NavigationContainer>
+    <RootSiblingParent>
+      <NavigationContainer>
+        <Welcome.Navigator
+          initialRouteName="Welcome"
+          backBehavior="firstRoute"
+          screenOptions={{ cardStyle: { backgroundColor: "#0782F9" } }}
+        >
+          <Welcome.Screen
+            options={{ headerShown: false }}
+            name="Welcome"
+            component={WelcomeScreen}
+          />
+          <Welcome.Screen
+            options={navOptions}
+            name="Login"
+            component={LoginScreen}
+          />
+          <Welcome.Screen
+            options={navOptions}
+            name="Register"
+            component={RegisterScreen}
+          />
+          <Welcome.Screen
+            options={{ headerShown: false }}
+            name="LoggedIn"
+            component={LoggedInNavigator}
+          />
+        </Welcome.Navigator>
+      </NavigationContainer>
+    </RootSiblingParent>
   );
 }
 

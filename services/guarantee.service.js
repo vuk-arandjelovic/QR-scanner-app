@@ -19,6 +19,10 @@ export class GuaranteeService extends BaseService {
     return this.request.get("/getUserGuarantees");
   }
 
+  updateGuarantee(id, guaranteeData) {
+    return this.request.put(`/${id}`, guaranteeData);
+  }
+
   deleteGuarantee(id) {
     return this.request.delete(`/${id}`);
   }

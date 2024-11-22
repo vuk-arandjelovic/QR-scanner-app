@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   View,
@@ -6,11 +6,13 @@ import {
   Animated,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { Camera, CameraView } from "expo-camera";
 import ScrapeService from "@/services/scrape.service";
-// import apiExporter from "../../API";
+import Toast from "react-native-root-toast";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const ScannerScreen = () => {
   const navigator = useNavigation();
@@ -20,6 +22,38 @@ const ScannerScreen = () => {
   const [focusLineAnimation, setFocusLineAnimation] = useState(
     new Animated.Value(0)
   );
+  const lastScanRef = useRef("");
+  const scanTimeoutRef = useRef(null);
+  const toastOffset = useRef(80);
+
+  const SCREEN_WIDTH = Dimensions.get("window").width;
+  const TOAST_WIDTH = SCREEN_WIDTH * 0.9;
+
+  const showToast = (message, type = "info") => {
+    const backgroundColor =
+      type === "success" ? "#28a745" : type === "error" ? "#dc3545" : "#17a2b8";
+
+    const toast = Toast.show(message, {
+      duration: Toast.durations.SHORT,
+      position: toastOffset.current,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      backgroundColor,
+      containerStyle: {
+        width: TOAST_WIDTH,
+        padding: 15,
+        borderRadius: 8,
+      },
+    });
+
+    toastOffset.current += 60;
+    setTimeout(() => {
+      toastOffset.current -= 60;
+    }, Toast.durations.SHORT);
+
+    return toast;
+  };
   const animateLine = () => {
     Animated.sequence([
       Animated.timing(focusLineAnimation, {
@@ -44,17 +78,39 @@ const ScannerScreen = () => {
     getCameraPermissions();
 
     animateLine();
+
+    return () => {
+      if (scanTimeoutRef.current) {
+        clearTimeout(scanTimeoutRef.current);
+      }
+    };
   }, []);
 
-  const handleBarcodeScanned = ({ type, data }) => {
+  const handleBarcodeScanned = async ({ type, data }) => {
+    if (data === lastScanRef.current) {
+      return;
+    }
+    lastScanRef.current = data;
     setScanned(true);
-    console.log(
-      `Bar code with type ${type} and data ${data} has been scanned!`
-    );
-    ScrapeService.scrape(data).then((res) => {
+    showToast("Processing bill...", "info");
+
+    try {
+      const res = await ScrapeService.scrape(data);
       console.log(res);
-      handleBack();
-    });
+      if (res.error) {
+        showToast(res.error, "error");
+      } else {
+        showToast("Bill processed successfully", "success");
+
+        handleBack();
+      }
+    } catch (error) {
+      showToast(error, "error");
+    }
+
+    scanTimeoutRef.current = setTimeout(() => {
+      lastScanRef.current = "";
+    }, 1000);
   };
 
   if (hasPermission === null) {
@@ -80,10 +136,7 @@ const ScannerScreen = () => {
       <View style={styles.overlay}>
         <View style={styles.unfocusedContainer}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Image
-              source={require("../../assets/rescan.png")}
-              style={{ width: 50, height: 50 }}
-            />
+            <AntDesign name="back" size={34} color="white" />
           </TouchableOpacity>
         </View>
         <View style={styles.middleContainer}>

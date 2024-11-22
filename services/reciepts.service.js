@@ -9,5 +9,11 @@ export class RecieptsService extends BaseService {
   getReciepts() {
     return this.request.get(`/getUserBills`);
   }
+  getRecieptsDetailed() {
+    return this.request.get(`/getUserBillsDetailed`);
+  }
+  getReciept(id) {
+    return this.request.get(`/${id._id}`);
+  }
 }
 export default new RecieptsService();

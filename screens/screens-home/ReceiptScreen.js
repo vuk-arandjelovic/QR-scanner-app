@@ -1,429 +1,340 @@
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
-  ScrollView,
-  View,
-  Image,
-  Modal,
   TouchableOpacity,
+  View,
+  ScrollView,
+  Modal,
+  TextInput,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import RecieptsService from "@/services/reciepts.service";
-import StoresService from "@/services/stores.service";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import StorageService from "@/services/storage.service";
 
-const ReceiptScreen = () => {
-  const [bills, setBills] = useState([]);
-  const [stores, setStores] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+export default function ReceiptScreen() {
+  const [receipts, setReceipts] = useState([]);
+  const [filteredReceipts, setFilteredReceipts] = useState([]);
+  const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const [detailsModal, setDetailsModal] = useState(false);
+  const [filterModal, setFilterModal] = useState(false);
+  const [userId, setUserId] = useState(null);
+  // Filter states
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerMode, setDatePickerMode] = useState("from");
 
+  const getUserId = async () => {
+    try {
+      const userId = await StorageService.getUserId();
+      setUserId(userId);
+    } catch (error) {
+      console.error("Error getting userId:", error);
+    }
+  };
   useEffect(() => {
-    RecieptsService.getReciepts().then((res) => {
-      console.log(res);
-      setBills(res);
-    });
-    StoresService.getStores().then((res) => {
-      console.log(res);
-      setStores(res);
-    });
-    // setBills(mock);
+    getUserId();
+    loadReceipts();
   }, []);
 
-  const handleFilter = () => {
-    console.log(bills);
-    alert("triggered filter");
-  };
-  const handleDetails = (item) => {
-    setSelectedItem(item);
-    setIsModalVisible(true);
-    console.log(item);
+  const loadReceipts = async () => {
+    try {
+      const res = await RecieptsService.getRecieptsDetailed(userId);
+      setReceipts(res.response);
+      setFilteredReceipts(res.response);
+    } catch (err) {
+      console.error(err);
+      alert("Error loading receipts");
+    }
   };
 
-  const closeModal = () => {
-    setIsModalVisible(false);
+  const handleReceiptPress = (receipt) => {
+    setSelectedReceipt(receipt);
+    setDetailsModal(true);
   };
-  const timeFormat = (time) => {
-    return new Date(time).toLocaleString();
+
+  const applyFilters = () => {
+    let filtered = [...receipts];
+
+    if (dateFrom) {
+      filtered = filtered.filter((r) => new Date(r.date) >= dateFrom);
+    }
+    if (dateTo) {
+      filtered = filtered.filter((r) => new Date(r.date) <= dateTo);
+    }
+    if (minAmount) {
+      filtered = filtered.filter((r) => r.total >= parseFloat(minAmount));
+    }
+    if (maxAmount) {
+      filtered = filtered.filter((r) => r.total <= parseFloat(maxAmount));
+    }
+
+    setFilteredReceipts(filtered);
+    setFilterModal(false);
   };
-  const getStoreName = (id) => {
-    const store = stores.find((s) => s?._id === id);
-    return store?.name;
+
+  const clearFilters = () => {
+    setDateFrom(null);
+    setDateTo(null);
+    setMinAmount("");
+    setMaxAmount("");
+    setFilteredReceipts(receipts);
+    setFilterModal(false);
   };
+
+  const handleDateChange = (event, date) => {
+    setShowDatePicker(false);
+    if (date) {
+      if (datePickerMode === "from") {
+        setDateFrom(date);
+      } else {
+        setDateTo(date);
+      }
+    }
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.mainContainer}>
       <View style={styles.header}>
-        <Text style={{ fontSize: 30 }}>Skenirani Racuni:</Text>
-        <TouchableOpacity style={styles.filter} onPress={handleFilter}>
-          <Image
-            style={styles.filterIcon}
-            source={require("../../assets/filter_icon.png")}
-          />
+        <Text style={styles.headerText}>Receipts</Text>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => setFilterModal(true)}
+        >
+          <Text style={styles.filterButtonText}>Filter</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-        {bills.map((item, index) => (
+
+      <ScrollView style={styles.content}>
+        {filteredReceipts.map((receipt) => (
           <TouchableOpacity
-            style={styles.contentItem}
-            key={index}
-            onPress={() => handleDetails(item)}
+            key={receipt._id}
+            style={styles.receiptCard}
+            onPress={() => handleReceiptPress(receipt)}
           >
-            <View style={{ maxWidth: "75%" }}>
-              <Text style={{ fontSize: 25 }}>{getStoreName(item?.store)}</Text>
-              <Text>{timeFormat(item?.date)}</Text>
-            </View>
-            <Text style={{ fontSize: 20 }}>{item?.total}</Text>
+            <Text style={styles.storeName}>{receipt.store?.name}</Text>
+            <Text style={styles.receiptDate}>
+              {new Date(receipt.date).toLocaleDateString()}
+            </Text>
+            <Text style={styles.receiptTotal}>
+              {receipt.total?.toFixed(2)} RSD
+            </Text>
           </TouchableOpacity>
         ))}
-      </View>
-      <Modal visible={isModalVisible} animationType="fade" transparent={true}>
-        <View
-          style={{
-            backgroundColor: "#00000080",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+      </ScrollView>
+
+      {/* Details Modal - Same as GuaranteeScreen */}
+      <Modal
+        visible={detailsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setDetailsModal(false)}
+      >
+        {/* Copy the entire Modal content from GuaranteeScreen */}
+      </Modal>
+
+      {/* Filter Modal */}
+      <Modal
+        visible={filterModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setFilterModal(false)}
+      >
+        <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalHeader}>Details</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-            {selectedItem && (
-              <View style={styles.modalContent}>
-                <Text>{getStoreName(selectedItem?.store)}</Text>
-                <Text>{timeFormat(selectedItem?.date)}</Text>
-              </View>
-            )}
+            <Text style={styles.modalTitle}>Filter Receipts</Text>
+
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>Date Range</Text>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => {
+                  setDatePickerMode("from");
+                  setShowDatePicker(true);
+                }}
+              >
+                <Text>
+                  {dateFrom ? dateFrom.toLocaleDateString() : "From Date"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => {
+                  setDatePickerMode("to");
+                  setShowDatePicker(true);
+                }}
+              >
+                <Text>{dateTo ? dateTo.toLocaleDateString() : "To Date"}</Text>
+              </TouchableOpacity>
+
+              <Text style={styles.filterLabel}>Amount Range</Text>
+              <TextInput
+                style={styles.input}
+                value={minAmount}
+                onChangeText={setMinAmount}
+                placeholder="Min Amount"
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={styles.input}
+                value={maxAmount}
+                onChangeText={setMaxAmount}
+                placeholder="Max Amount"
+                keyboardType="numeric"
+              />
+            </View>
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.clearButton]}
+                onPress={clearFilters}
+              >
+                <Text style={styles.buttonText}>Clear</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.applyButton]}
+                onPress={applyFilters}
+              >
+                <Text style={styles.buttonText}>Apply</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
-    </ScrollView>
-  );
-};
 
-export default ReceiptScreen;
+      {showDatePicker && (
+        <DateTimePicker
+          value={
+            datePickerMode === "from"
+              ? dateFrom || new Date()
+              : dateTo || new Date()
+          }
+          mode="date"
+          onChange={handleDateChange}
+        />
+      )}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    marginTop: 20,
+  mainContainer: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
   },
   header: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 10,
-    borderBottomColor: "#0782F9",
-    borderBottomWidth: 2,
-    marginHorizontal: 20,
-  },
-  filter: {
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-  },
-  filterIcon: {
-    aspectRatio: 1 / 1,
-    height: 40,
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-  },
-  content: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  contentItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 10,
-    maxHeight: 70,
+    padding: 20,
     backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
-  modalContainer: {
-    top: 90,
-    height: "75%",
-    width: "90%",
-    alignSelf: "center",
-    // justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-  },
-  modalHeader: {
+  headerText: {
     fontSize: 24,
     fontWeight: "bold",
-    margin: 15,
   },
-  closeButton: {
-    position: "absolute",
-    top: 20,
-    right: 20,
+  filterButton: {
+    backgroundColor: "#0782F9",
+    padding: 10,
+    borderRadius: 8,
   },
-  closeButtonText: {
+  filterButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  content: {
+    flex: 1,
+    padding: 15,
+  },
+  receiptCard: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    elevation: 3,
+  },
+  storeName: {
     fontSize: 18,
-    color: "#007AFF",
+    fontWeight: "bold",
+    marginBottom: 5,
   },
-  modalContent: {
+  receiptDate: {
+    color: "#666",
+    marginBottom: 5,
+  },
+  receiptTotal: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#0782F9",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
     padding: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#0782F9",
+  },
+  filterSection: {
+    marginBottom: 20,
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: "#0782F9",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#0782F9",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 8,
+    marginHorizontal: 5,
+  },
+  clearButton: {
+    backgroundColor: "#ff4444",
+  },
+  applyButton: {
+    backgroundColor: "#0782F9",
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
-
-const mock = [
-  {
-    "id": "661f0080ab196a030eb3a134",
-    "userId": "660f73255eb7e010e59d00b1",
-    "url":
-      "https://suf.purs.gov.rs/v/?vl=A1ZIR0ZMTU0zVkhHRkxNTTO6AQIAjvgBACzdUAAAAAAAAAABh4XMVxAAAABJ%2BZW%2BaikggNYx%2Bs7b2Gga71ziLliErrQSjQaBJJ2bYESiayjR2NPT1hlJ5bw4HB2WBdaA9tVHaJBhGoJ13Ny2imEsd6H68OSOFeapXafrVLhSGLq7zljIvqpSLX4K7kj4t2NLdhyt6QJDlAW%2FffLGb8MdXLx3l2p10x3xsIUsyksr63ElefTEx232CI1tBHOfMydxZboRNhZdvhrZujKTPGy7Y7Oym1kqk%2BPYE1usdYIB6lfl%2BXVTqd6UqxFRLjGW3WjMIx2LsykXZAc0GOyaZ5%2FpEqFBDh2eU7jNa0Ufi8yhhfudfRks54AHmfyA8%2FRmEI2q%2FxfQ5j3oTmKFgVDmnD6%2BBn9cVuED7JOZrddG0f1GRKIHLmXCN1%2F2zqerkYUmZA8o1iRFzJJIBc5pAIHtve9CVPE7UYD6Tu8N1ZsFGcwavjUMozRpuvYBh0Me7SoUYEZbMT87H6pX8eNfaGaz7TVUqmEFpgGNErZQcxZfdcL1S83bOSNlk%2FccSK1RPoxOklCZopMcohNRWj9K0kPCn5gOgWyAYMJv96KcvEQAlJNt1WdJhXnXzcnOmU7SPykde84oPRwiYYPA9G7Ez2fAGtKrNnTGcxDw03W9%2FRHYK7AwC8O%2BNXPnO77hpwsP6eDC1bWuxfQkU7jV%2BLBOQdz2wpxCoK%2F%2FRHsaO7jLO%2Bk4C3c%2BhALY4z7CyHSv3n4486I%3D",
-    "pib": "106884584",
-    "firma": "LIDL SRBIJA",
-    "prodavnica": "1056774-Prodavnica br. 0107",
-    "adresa": "ЗЕМУНСКА 2",
-    "grad": "Београд-Нови Београд",
-    "kasir": "19",
-    "esir": "625/12.08.09.60",
-    "artikli": [
-      {
-        "naziv": "Beli čips Paprika/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 164.99,
-      },
-      {
-        "naziv": "Beli čips Paprika/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 164.99,
-      },
-      {
-        "naziv": "Cola/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 54.99,
-      },
-      {
-        "naziv": "Energetsko piće Moji/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 49.99,
-      },
-      {
-        "naziv": "Semenke suncokreta/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 94.99,
-      },
-    ],
-    "ukupanIznos": 529.95,
-    "porez": 88.33,
-    "pfrVreme": "15.04.2023. 18:42:54",
-    "pfrBrojRacuna": "VHGFLMM3-VHGFLMM3-13151",
-    "brojacRacuna": "129166/131514ПП",
-  },
-  {
-    "id": "661f008fab196a030eb3a162",
-    "userId": "660f73255eb7e010e59d00b1",
-    "url":
-      "https://suf.purs.gov.rs/v/?vl=AzQ4NlNYVzVSNDg2U1hXNVJncAAAtlsAAGCHJQcAAAAAAAABh1fdD7AAAABfOiweW45bU3oOwlmaImSaWyMwE%2FWw%2FziQYpQTX0Vctlr8OG7yo%2FaSPKIcggCUOuvkD3dvTA8rSqys8xnvbnvD%2BrIB0WD4RrIEhbgAJcnWlv%2BsfKjqovn8XYz5dd9Y%2FCegTXANuN%2BPJ%2Fxoi6rni%2FUZANvFiiVendoZjpHFVIgW9%2FsGzgRQAUSkUwMtrl5Mon14hCQisXSY87hEl9TEqrWo9gcV9St6FkRgIcNzv2YaAftHO5E0LD0jg9gqvcdCA9uO6XSjpY%2BCZuiX71y0Aq05jMtWpx6e7VGFy38ysYCKJgVzp%2BgA9qRoxQzT%2Brcm6%2FJwq8gWK40Ut1IwM56%2FMxytaemSP%2BcZPD3Jok8LP7Oo%2BS7F%2BULavBY6FKKHfq22X6cpq0HiIWsvaKkK0bb6BhJRcJIpJHUIH5PHCSpF7nB%2FhNriKQtRclcTJMa2dfj5XOpcS5UOm7WQk3ZSunNpvCN3JVA4eEtIxl8JWQ4xNH0%2FFQYVDZS06oCKIem%2Fhu%2BsSZpY9sRdO5akiWby2oaLxhhC2yPWOEgJ7yDxrb1vyweWlIIzq5XGogJGfZLIho6qXFfA4bfIpJLctxqVwg3B1WegkFMm4L1IN1zA4dIst1pVE7C%2BUVRBOa2UgHfM6hPr3JumCYX0txTRJVNLm89QuhVw9IyCb2En%2FKqfyHEz55RSlbJ3mxy4kXflOW2M%2FGrWGoI%3D",
-    "pib": "104457054",
-    "firma": "TEHNOMEDIA CENTAR DOO ZAJEČAR",
-    "prodavnica": "1029312-Maloprodaja 38",
-    "adresa": "ОМЛАДИНСКИХ БРИГАДА 33А",
-    "grad": "Београд-Нови Београд",
-    "kasir": "Dragana Matić R38",
-    "esir": "663/1.0.0",
-    "artikli": [
-      {
-        "naziv": "85395 SPECIJALIZOVAN KUHINJSKI APARAT BEPER BA.010 (Ђ)",
-        "kolicina": 1,
-        "cena": 11990,
-      },
-    ],
-    "ukupanIznos": 11990,
-    "porez": 1998.33,
-    "pfrVreme": "06.04.2023. 20:38:38",
-    "pfrBrojRacuna": "486SXW5R-486SXW5R-28775",
-    "brojacRacuna": "23478/28775ПП",
-  },
-  {
-    "id": "661f0081ab196a030eb3a13b",
-    "userId": "660f73255eb7e010e59d00b1",
-    "url":
-      "https://suf.purs.gov.rs/v/?vl=AzM0S0E1OUFRMzRLQTU5QVHCBwEAfAYBAFSDHgAAAAAAAAABh3%2BCsGAAAAADYIR6RCTqdzoRPjJWRcOjTincGf9S92qhnVU%2BBhCGcTmMMLYKC4k%2BfXOX0kW1PYzY9xCfJBl1usCWW2Ve7%2BkuKHnzXTj%2FVcLpRgf0AvqJOxLJjOGThPOWm3t74TW7BIp0C8gMqoCkmx0IdEeS%2BJSCs7gjU5vLJSmiE2BFB84MVYxZWm8RNPFC0YU7qydeRqw04ayX8iXqzCrqMn84wK27Pp49HfeBS8ynr20u44KWg8ow8f7Go7x2hhPQN2X7d1uZ%2F%2FtfGdN7Jle99u3dUvpLt6%2B%2BnXk2Ln%2Fm1gIH%2F7ciWY2jEYAr%2BI1DFxwGGEwyK0OeobLzVGWES4zGV%2FcbEwZOqPGBVYVWQsJ0HdraTHuwC%2F%2B0%2BzU68Qe6kFxCyTThr42MZGDl5MQoh1G4VUGRmqm%2BfgMPbJUNLzZ5J0%2BfVVhV%2FaOxMhQ%2FPf69pDpoys9raElAcOiqi9HusWW7zIsU10V5yiBAx6lPB%2FHyaxTGSuW758bBBJkSF%2B2yFMtQeto7a%2B1H4i6AdkBbJaH5Q920ijJX11bhhoenW9dsx1g%2BRRq4fagI4RLHTdyDpK586zG7TbsB3lfSZOdcs81ZromN2X4KnBd9CtoUlNfu1WmevR937DxsAjWuWzCQkCxY7AQw6Z2Br6%2BtZKvUMF%2FF912WGjnta6sru0kBHiak29772fna9v3x6%2Flbg59%2Ben%2FsjqXmZu4%3D",
-    "pib": "101670560",
-    "firma": "MERCATOR-S",
-    "prodavnica": "1229306-IDEA 597",
-    "adresa": "ЈУРИЈА ГАГАРИНА 177",
-    "grad": "Београд-Нови Београд",
-    "kasir": "1032149",
-    "esir": "431/2.0.0.2",
-    "artikli": [
-      {
-        "naziv": "SOK COCKTA 0.5L KOLINSKA         KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 89.99,
-      },
-      {
-        "naziv": "BUREK SA SIROM I SPANACEM 90G    KOM (Е)",
-        "kolicina": 2,
-        "cena": 54.99,
-      },
-    ],
-    "ukupanIznos": 199.97,
-    "porez": 25,
-    "pfrVreme": "14.04.2023. 13:24:44",
-    "pfrBrojRacuna": "34KA59AQ-34KA59AQ-67522",
-    "brojacRacuna": "67196/67522ПП",
-  },
-  {
-    "id": "661f0082ab196a030eb3a140",
-    "userId": "660f73255eb7e010e59d00b1",
-    "url":
-      "https://suf.purs.gov.rs/v/?vl=A0pDV1FGWUZaSkNXUUZZRlr0OgEA6DoBAAh7DgAAAAAAAAABh2pKHZsAAAAkBWLzH6g0zHl8xyJv41yrIqYEo2VbHo4X5sRqIQlvWTVZ9IyFiocTKfgBeD1%2BBjTyNAfD8eyZ%2Bfs07c2u8MpH%2B9PCCX8qkK7pY4ViA0OImtCRS7X3%2Bd0b5ql0bq9Z%2FZu5QzZ8PJ70%2F%2F7RDWQyhDZ3fFGciIpwez4I%2BpC1ZcfsCGZWMPQKDnF6m%2FWcOp53fca4F8i%2BNuzNOIRADzynx5etUDhi6JBzkavQmJczRQt%2BGcWiZNu2DATnuxGyJIRQdb09Vc8Aek5%2Fq17vBUTMCgRM6bkhIR0zsgipw4K0%2Br6Lyu8J8HUQoV3%2BqWe3YQ0AzL08oSMhx2cJvtLq6J%2FTLZo8jUO3F%2BMZbzpfeqaqpjuDFsjFp8bIo7y8NEgnn8LEQS7yZJEWOe0QssQGTGGWh7rV1L01rJbbOBw5aEfPLzQU5rk7rnkK2Bd%2BHb%2B%2Bpb1DuBHysz9apSyzsu3G2xNkmnLMIrjD0Ox8H4eW%2B%2BxO%2Fo3XQGNORyPmfgkBsaTP6hrzbvjwOUXFznlYOzM8bXmAm4skmHbmn4Ir7YdCjbF%2FvZYIllKluwFWHcnXfPfLsxx4BNpxTZX9gX7Jw6lQmw1pbpexZix1tVRdwi4pXXZrXKRf0wVSNNVCYdqkMZTmuKQzhUclM4U0ZUDtkWChKBMdCa3PttdEZ%2FQrIEErjlfI4wV2MJDuD3UOt9bOG88ZRQ%2FqwIM%3D",
-    "pib": "100218528",
-    "firma": "SCB DOO BEOGRAD",
-    "prodavnica": "1107247-LILI",
-    "adresa": "ВОЈВОДЕ СТЕПЕ 246",
-    "grad": "Београд-Вождовац",
-    "kasir": "borislavp",
-    "esir": "315/1.0.0",
-    "artikli": [
-      {
-        "naziv": "GUARANA MOJITO 50CL LIM/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 94.9,
-      },
-    ],
-    "ukupanIznos": 94.9,
-    "porez": 15.82,
-    "pfrVreme": "10.04.2023. 10:30:54",
-    "pfrBrojRacuna": "JCWQFYFZ-JCWQFYFZ-80628",
-    "brojacRacuna": "80616/80628ПП",
-  },
-  {
-    "id": "661f0083ab196a030eb3a144",
-    "userId": "660f73255eb7e010e59d00b1",
-    "url":
-      "https://suf.purs.gov.rs/v/?vl=A1VCM0FUTFI2VUIzQVRMUja%2BWQMA%2BEUDALjJmgEAAAAAAAABh3%2BYDzwAAABYMPE1hD2XIEjaHZIe6rnn2CvptE8U%2Bwgz%2F1FJTbDsCKdd%2FnBeAV3tkr%2F%2BMQu1Lg91zOnrJ7Kr0rSyysHFLSFM8GbLRdDd40bbfRrs4ckD12UwYnivYfP9F2EEISwBqvW7TT8wuPej6ZdjdUzlprVweE%2FB55z8z8lqwhVO9jOYjCuFG%2Fog6VitjIpQY7azIirhVoy6PUGf%2FSxKv%2B3ZV20QonwqOxAwFI9LYQ2LZEPfaYlWqmRZ8whpHzG741UCEeM5A6Hal%2FziDV%2FBnpmAmOm4G%2BdJ64nX64LKZCKPl7wtKoMDXce0xLSi6pWPfd6P2PUm1hTxaHU7%2FvFxnk7ny1SIgo%2Fc33a87QDaX7AgHcr7mW%2F%2F2ExNFTZHn3C6rXuTrdtm2sEwvWbFrIVVxiSLjKdkK%2Fb1bEaMMOdSlFW8jYLbtcoelul2jLlYsAx%2FIon%2BooDURFzdm5G4bmKEbuHgzOjOQy3uBD2qZTIoHsKtgPPvRb2ny3cn9jhmy%2FPU3NB%2FjD3pbompGyL3RAp592umE2vhnyz9Y5PP9T3uTuFNL281IwPXMkpgkjixp136lPwZlODQojTBxPYv%2FBWTx0Af%2FKuaQSnCAk4G1jYaiIuLo22b6wJsdwRHYF%2Bn38vxnYg4ptYUVE8z0b1bybTj4bJvl2cofxPz0xzIbf2yXyQsv3EZsjTP5fWaIZC%2FVdiwwt5aSe4%3D",
-    "pib": "106884584",
-    "firma": "LIDL SRBIJA",
-    "prodavnica": "1056774-Prodavnica br. 0107",
-    "adresa": "ЗЕМУНСКА 2",
-    "grad": "Београд-Нови Београд",
-    "kasir": "46",
-    "esir": "625/12.08.09.60",
-    "artikli": [
-      {
-        "naziv": "Jami Pizza Capriccio/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 246.99,
-      },
-      {
-        "naziv": "Jami Pizza Capriccio/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 246.99,
-      },
-      {
-        "naziv": "Jami Pizza Capriccio/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 246.99,
-      },
-      {
-        "naziv": "Jami Pizza Capriccio/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 246.99,
-      },
-      {
-        "naziv": "Farba za jaja crvena/KOM (Ђ)",
-        "kolicina": 2,
-        "cena": 5.99,
-      },
-      {
-        "naziv": "Šargarepa/KG (Е)",
-        "kolicina": 1.118,
-        "cena": 89.99,
-      },
-      {
-        "naziv": "Margarin 81,5% MK30 (Ђ)",
-        "kolicina": 1,
-        "cena": 79.99,
-      },
-      {
-        "naziv": "Krompir c. opr./KG (Е)",
-        "kolicina": 2.608,
-        "cena": 89.99,
-      },
-      {
-        "naziv": "Mesni narezak/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 69.99,
-      },
-      {
-        "naziv": "Mesni narezak/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 69.99,
-      },
-      {
-        "naziv": "Mesni narezak/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 69.99,
-      },
-      {
-        "naziv": "Smrznuti grašak/KOM (Е)",
-        "kolicina": 1,
-        "cena": 219.99,
-      },
-      {
-        "naziv": "Sveže mleko 2,8%/KOM (Е)",
-        "kolicina": 1,
-        "cena": 179.99,
-      },
-      {
-        "naziv": "Sveže mleko 2,8%/KOM (Е)",
-        "kolicina": 1,
-        "cena": 179.99,
-      },
-      {
-        "naziv": "Mleveni keks/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 159.99,
-      },
-      {
-        "naziv": "Pileća posebna mini/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 179.99,
-      },
-      {
-        "naziv": "C Oblande/KOM (Ђ)",
-        "kolicina": 1,
-        "cena": 146.99,
-      },
-    ],
-    "ukupanIznos": 2692.14,
-    "porez": 379.36,
-    "pfrVreme": "14.04.2023. 13:48:04",
-    "pfrBrojRacuna": "UB3ATLR6-UB3ATLR6-21958",
-    "brojacRacuna": "214520/219582ПП",
-  },
-];
