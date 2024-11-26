@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   StyleSheet,
   Text,
@@ -35,10 +36,12 @@ export default function ReceiptScreen() {
       console.error("Error getting userId:", error);
     }
   };
-  useEffect(() => {
-    getUserId();
-    loadReceipts();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getUserId();
+      loadReceipts();
+    }, [])
+  );
 
   const loadReceipts = async () => {
     try {
@@ -109,7 +112,7 @@ export default function ReceiptScreen() {
       </View>
 
       <ScrollView style={styles.content}>
-        {filteredReceipts.map((receipt) => (
+        {filteredReceipts?.map((receipt) => (
           <TouchableOpacity
             key={receipt._id}
             style={styles.receiptCard}
@@ -133,7 +136,75 @@ export default function ReceiptScreen() {
         transparent={true}
         onRequestClose={() => setDetailsModal(false)}
       >
-        {/* Copy the entire Modal content from GuaranteeScreen */}
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <ScrollView>
+              {selectedReceipt && (
+                <>
+                  <View style={styles.modalHeader}>
+                    <Text style={styles.modalTitle}>Bill Details</Text>
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={() => setDetailsModal(false)}
+                    >
+                      <Text style={styles.closeButtonText}>×</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Store Information</Text>
+                    <Text style={styles.detailText}>
+                      Store: {selectedReceipt?.store?.name}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      Company: {selectedReceipt?.store?.company?.name}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      Address: {selectedReceipt?.store?.address}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      City: {selectedReceipt?.store?.city}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      PIB: {selectedReceipt?.store?.company?.pib}
+                    </Text>
+                  </View>
+
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Bill Information</Text>
+                    <Text style={styles.detailText}>
+                      Date: {new Date(selectedReceipt?.date).toLocaleString()}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      Bill Number: {selectedReceipt?.pfr}
+                    </Text>
+                    <Text style={styles.detailText}>
+                      Total Amount: {selectedReceipt?.total?.toFixed(2)} RSD
+                    </Text>
+                    <Text style={styles.detailText}>
+                      Tax (PDV): {selectedReceipt?.pdv?.toFixed(2)} RSD
+                    </Text>
+                  </View>
+
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Items</Text>
+                    {selectedReceipt?.items?.map((item, index) => (
+                      <View key={index} style={styles.itemCard}>
+                        <Text style={styles.itemName}>{item?.item?.name}</Text>
+                        <Text style={styles.itemDetails}>
+                          Quantity: {item?.amount} × {item?.item?.price} RSD
+                        </Text>
+                        <Text style={styles.itemTotal}>
+                          Total: {item?.total?.toFixed(2)} RSD
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </>
+              )}
+            </ScrollView>
+          </View>
+        </View>
       </Modal>
 
       {/* Filter Modal */}
@@ -336,5 +407,117 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
+  },
+  detailsModal: {
+    maxHeight: "80%",
+  },
+  detailsSection: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 10,
+  },
+  detailsHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#0782F9",
+    marginBottom: 10,
+  },
+  detailItem: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  itemRow: {
+    flexDirection: "column",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  itemDetails: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 2,
+  },
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: "#0782F9",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "90%",
+    maxHeight: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#0782F9",
+  },
+  closeButton: {
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 30,
+    color: "#666",
+  },
+  section: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#0782F9",
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: "#333",
+  },
+  itemCard: {
+    backgroundColor: "white",
+    padding: 10,
+    marginBottom: 8,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  itemDetails: {
+    fontSize: 14,
+    color: "#666",
+  },
+  itemTotal: {
+    fontSize: 15,
+    fontWeight: "500",
+    marginTop: 4,
+    color: "#0782F9",
   },
 });
