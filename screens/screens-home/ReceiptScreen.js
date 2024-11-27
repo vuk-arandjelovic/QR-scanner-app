@@ -20,13 +20,6 @@ export default function ReceiptScreen() {
   const [detailsModal, setDetailsModal] = useState(false);
   const [filterModal, setFilterModal] = useState(false);
   const [userId, setUserId] = useState(null);
-  // Filter states
-  const [dateFrom, setDateFrom] = useState(null);
-  const [dateTo, setDateTo] = useState(null);
-  const [minAmount, setMinAmount] = useState("");
-  const [maxAmount, setMaxAmount] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [datePickerMode, setDatePickerMode] = useState("from");
 
   const getUserId = async () => {
     try {
@@ -58,45 +51,156 @@ export default function ReceiptScreen() {
     setSelectedReceipt(receipt);
     setDetailsModal(true);
   };
-
-  const applyFilters = () => {
+  const applyFilters = (filters) => {
     let filtered = [...receipts];
 
-    if (dateFrom) {
-      filtered = filtered.filter((r) => new Date(r.date) >= dateFrom);
+    if (filters.dateFrom) {
+      filtered = filtered.filter((r) => new Date(r.date) >= filters.dateFrom);
     }
-    if (dateTo) {
-      filtered = filtered.filter((r) => new Date(r.date) <= dateTo);
+    if (filters.dateTo) {
+      filtered = filtered.filter((r) => new Date(r.date) <= filters.dateTo);
     }
-    if (minAmount) {
-      filtered = filtered.filter((r) => r.total >= parseFloat(minAmount));
+    if (filters.minAmount) {
+      filtered = filtered.filter((r) => r.total >= filters.minAmount);
     }
-    if (maxAmount) {
-      filtered = filtered.filter((r) => r.total <= parseFloat(maxAmount));
+    if (filters.maxAmount) {
+      filtered = filtered.filter((r) => r.total <= filters.maxAmount);
     }
 
     setFilteredReceipts(filtered);
     setFilterModal(false);
   };
 
-  const clearFilters = () => {
-    setDateFrom(null);
-    setDateTo(null);
-    setMinAmount("");
-    setMaxAmount("");
-    setFilteredReceipts(receipts);
-    setFilterModal(false);
-  };
+  const FilterModal = ({ visible, onClose, onApply, onClear }) => {
+    const [dateFrom, setDateFrom] = useState(null);
+    const [dateTo, setDateTo] = useState(null);
+    const [minAmount, setMinAmount] = useState("");
+    const [maxAmount, setMaxAmount] = useState("");
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [datePickerMode, setDatePickerMode] = useState("from");
+    const handleClear = () => {
+      setDateFrom(null);
+      setDateTo(null);
+      setMinAmount("");
+      setMaxAmount("");
+      onApply({}); // Pass empty filters to parent
+    };
 
-  const handleDateChange = (event, date) => {
-    setShowDatePicker(false);
-    if (date) {
-      if (datePickerMode === "from") {
-        setDateFrom(date);
-      } else {
-        setDateTo(date);
+    const handleApply = () => {
+      onApply({
+        dateFrom,
+        dateTo,
+        minAmount: minAmount ? parseFloat(minAmount) : null,
+        maxAmount: maxAmount ? parseFloat(maxAmount) : null,
+      });
+    };
+    const handleDateChange = (event, date) => {
+      setShowDatePicker(false);
+      if (date) {
+        if (datePickerMode === "from") {
+          setDateFrom(date);
+        } else {
+          setDateTo(date);
+        }
       }
-    }
+    };
+
+    return (
+      <Modal
+        visible={visible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={onClose}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={onClose}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.modalContainer}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text style={styles.modalTitle}>Filter Receipts</Text>
+
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>Date Range</Text>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => {
+                  setDatePickerMode("from");
+                  setShowDatePicker(true);
+                }}
+              >
+                <Text>
+                  {dateFrom ? dateFrom.toLocaleDateString() : "From Date"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => {
+                  setDatePickerMode("to");
+                  setShowDatePicker(true);
+                }}
+              >
+                <Text>{dateTo ? dateTo.toLocaleDateString() : "To Date"}</Text>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={
+                    datePickerMode === "from"
+                      ? dateFrom || new Date()
+                      : dateTo || new Date()
+                  }
+                  mode="date"
+                  onChange={handleDateChange}
+                  display="default"
+                />
+              )}
+              <Text style={styles.filterLabel}>Amount Range</Text>
+              <TextInput
+                style={styles.input}
+                value={minAmount}
+                onChangeText={setMinAmount}
+                placeholder="Min Amount"
+                keyboardType="numeric"
+                returnKeyType="done"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+              />
+              <TextInput
+                style={styles.input}
+                value={maxAmount}
+                onChangeText={setMaxAmount}
+                placeholder="Max Amount"
+                keyboardType="numeric"
+                returnKeyType="done"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+              />
+            </View>
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.clearButton]}
+                onPress={handleClear}
+              >
+                <Text style={styles.buttonText}>Clear</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.applyButton]}
+                onPress={handleApply}
+              >
+                <Text style={styles.buttonText}>Apply</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    );
   };
 
   return (
@@ -110,9 +214,8 @@ export default function ReceiptScreen() {
           <Text style={styles.filterButtonText}>Filter</Text>
         </TouchableOpacity>
       </View>
-
       <ScrollView style={styles.content}>
-        {filteredReceipts?.map((receipt) => (
+        {filteredReceipts.map((receipt) => (
           <TouchableOpacity
             key={receipt._id}
             style={styles.receiptCard}
@@ -128,8 +231,6 @@ export default function ReceiptScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      {/* Details Modal - Same as GuaranteeScreen */}
       <Modal
         visible={detailsModal}
         animationType="slide"
@@ -207,87 +308,11 @@ export default function ReceiptScreen() {
         </View>
       </Modal>
 
-      {/* Filter Modal */}
-      <Modal
+      <FilterModal
         visible={filterModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setFilterModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Filter Receipts</Text>
-
-            <View style={styles.filterSection}>
-              <Text style={styles.filterLabel}>Date Range</Text>
-              <TouchableOpacity
-                style={styles.dateInput}
-                onPress={() => {
-                  setDatePickerMode("from");
-                  setShowDatePicker(true);
-                }}
-              >
-                <Text>
-                  {dateFrom ? dateFrom.toLocaleDateString() : "From Date"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.dateInput}
-                onPress={() => {
-                  setDatePickerMode("to");
-                  setShowDatePicker(true);
-                }}
-              >
-                <Text>{dateTo ? dateTo.toLocaleDateString() : "To Date"}</Text>
-              </TouchableOpacity>
-
-              <Text style={styles.filterLabel}>Amount Range</Text>
-              <TextInput
-                style={styles.input}
-                value={minAmount}
-                onChangeText={setMinAmount}
-                placeholder="Min Amount"
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={styles.input}
-                value={maxAmount}
-                onChangeText={setMaxAmount}
-                placeholder="Max Amount"
-                keyboardType="numeric"
-              />
-            </View>
-
-            <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={[styles.button, styles.clearButton]}
-                onPress={clearFilters}
-              >
-                <Text style={styles.buttonText}>Clear</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.applyButton]}
-                onPress={applyFilters}
-              >
-                <Text style={styles.buttonText}>Apply</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={
-            datePickerMode === "from"
-              ? dateFrom || new Date()
-              : dateTo || new Date()
-          }
-          mode="date"
-          onChange={handleDateChange}
-        />
-      )}
+        onClose={() => setFilterModal(false)}
+        onApply={applyFilters}
+      />
     </View>
   );
 }
@@ -519,5 +544,70 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 4,
     color: "#0782F9",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#0782F9",
+    textAlign: "center",
+  },
+  filterSection: {
+    marginBottom: 20,
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: "#0782F9",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#0782F9",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 8,
+    marginHorizontal: 5,
+  },
+  clearButton: {
+    backgroundColor: "#ff4444",
+  },
+  applyButton: {
+    backgroundColor: "#0782F9",
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
