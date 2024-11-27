@@ -1,183 +1,75 @@
-import { StyleSheet, Text, ScrollView, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  ScrollView,
+  View,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
-import React, { useEffect, useState } from "react";
-import MapView, { Callout } from "react-native-maps";
-import { Marker } from "react-native-maps";
-import apiExporter from "../../API/apiExporter";
+import MapView, { Callout, Marker } from "react-native-maps";
+import StoresService from "@/services/stores.service";
+import RecieptsService from "@/services/reciepts.service";
 
-const api = apiExporter;
+export default function MapScreen() {
+  const [stores, setStores] = useState([]);
+  const [selectedStore, setSelectedStore] = useState(null);
+  const [storeReceipts, setStoreReceipts] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [detailsModal, setDetailsModal] = useState(false);
+  const [selectedCompanyPib, setSelectedCompanyPib] = useState(null);
 
-const MapScreen = () => {
-  const [selected, setSelected] = useState("");
-  const [markers, setMarkers] = useState([]);
-  const [rawData, setRawData] = useState([]);
-  const [listBoxData, setListBoxData] = useState([]);
-  const [rawDataCopy, setRawDataCopy] = useState([]);
-
-  const mock = [
-    {
-      naziv: "1056774-Prodavnica br. 0107",
-      grad: "Београд-Нови Београд",
-      pib: 106884584,
-      y: 20.389,
-      adresa: "ЗЕМУНСКА 2   ",
-      id: 1,
-      x: 44.8299,
-    },
-    {
-      naziv: "1229306-IDEA 597",
-      grad: "Београд-Нови Београд",
-      pib: 101670560,
-      y: 20.3814,
-      adresa: "ЈУРИЈА ГАГАРИНА 177   ",
-      id: 2,
-      x: 44.8012,
-    },
-    {
-      naziv: "1107247-LILI",
-      grad: "Београд-Вождовац",
-      pib: 100218528,
-      y: 20.482,
-      adresa: "ВОЈВОДЕ СТЕПЕ 246   ",
-      id: 3,
-      x: 44.7722,
-    },
-    {
-      naziv: "1099856-PJ SPORT VISION MEGASTORE",
-      grad: "Београд-Нови Београд",
-      pib: 100139481,
-      y: 20.4082,
-      adresa: "ЈУРИЈА ГАГАРИНА 16   ",
-      id: 4,
-      x: 44.8009,
-    },
-    {
-      naziv: "1029312-Maloprodaja 38",
-      grad: "Београд-Нови Београд",
-      pib: 104457054,
-      y: 20.4021,
-      adresa: "ОМЛАДИНСКИХ БРИГАДА 33А   ",
-      id: 5,
-      x: 44.8106,
-    },
-    {
-      naziv: "1115718-S.T.R. BLOK SHOP",
-      grad: "Београд-Нови Београд",
-      pib: 106774370,
-      y: 20.3974,
-      adresa: "ЈУРИЈА ГАГАРИНА 28   ",
-      id: 6,
-      x: 44.803,
-    },
-    {
-      naziv: "1159749-Reserved SC BEO Beograd",
-      grad: "Београд-Звездара",
-      pib: 109839118,
-      y: 20.5011,
-      adresa: "ВОЈИСЛАВА ИЛИЋА 141   ",
-      id: 7,
-      x: 44.7864,
-    },
-    {
-      naziv: "1027176-Veropoulos 5",
-      grad: "Београд-Вождовац",
-      pib: 100065309,
-      y: 20.4784,
-      adresa: "ВОЈВОДЕ СТЕПЕ 249   ",
-      id: 8,
-      x: 44.771,
-    },
-    {
-      naziv: "1256801-VAPEMANIA 3",
-      grad: "Београд-Звездара",
-      pib: 106851710,
-      y: 20.501,
-      adresa: "ВОЈИСЛАВА ИЛИЋА 141   ",
-      id: 9,
-      x: 44.7864,
-    },
-    {
-      naziv: "1111662-IDEA 333",
-      grad: "Београд-Стари Град",
-      pib: 101670560,
-      y: 20.4612,
-      adresa: "КРАЉА МИЛАНА 28   ",
-      id: 10,
-      x: 44.8097,
-    },
-  ];
-
-  // Ucitavanje prodavnica sa API-ja i punjenje lista
   useEffect(() => {
-    // // API poziv
-    // api.getProdavnicaAll().then((res) => {
-    //   // Podatci za debugging
-    //   setRawData(res);
-
-    //   // Ciscenje lista
-    //   setListBoxData([]);
-    //   setMarkers([]);
-
-    //   // Obrada dobijenih prodavnica
-    //   res.forEach((element) => {
-    //     var listBoxObject = {};
-    //     var markersObject = {};
-
-    //     // Objekat za DropDown listu prodavnica
-    //     listBoxObject["key"] = element["id"].toString();
-    //     listBoxObject["value"] = element["naziv"];
-    //     listBoxData.push(listBoxObject);
-
-    //     // Objekat za marker na mapi
-    //     markersObject["latitude"] = element["x"];
-    //     markersObject["longitude"] = element["y"];
-    //     markersObject["naziv"] = element["naziv"].toString();
-    //     markersObject["grad"] = element["grad"].toString();
-    //     markersObject["adresa"] = element["adresa"].toString();
-    //     markers.push(markersObject);
-    //   });
-
-    //   // Pozivanje set metoda da bi se izazvalo ponovno crtanje
-    //   setListBoxData(listBoxData);
-    //   setMarkers(markers);
-    // });
-    setRawData(mock);
-    setRawDataCopy(mock);
-    setListBoxData([]);
-    setMarkers([]);
-
-    mock.forEach((element) => {
-      var listBoxObject = {};
-      var markersObject = {};
-
-      listBoxObject["key"] = element["id"].toString();
-      listBoxObject["value"] = element["naziv"].slice(8);
-      listBoxObject["pib"] = element["pib"];
-      if (listBoxData.find((pib) => pib.pib === element["pib"])) {
-      } else {
-        listBoxData.push(listBoxObject);
-      }
-
-      markersObject["latitude"] = element["x"];
-      markersObject["longitude"] = element["y"];
-      markersObject["naziv"] = element["naziv"].toString();
-      markersObject["grad"] = element["grad"].toString();
-      markersObject["adresa"] = element["adresa"].toString();
-      markersObject["pib"] = element["pib"];
-      markers.push(markersObject);
-    });
-
-    setListBoxData(listBoxData);
-    setMarkers(markers);
+    loadData();
   }, []);
 
-  const handleSelect = () => {
-    setRawDataCopy(
-      rawDataCopy.map((item) => {
-        item.pib === selected.pib;
-      })
-    );
+  const loadData = async () => {
+    try {
+      const storesRes = await StoresService.getStores();
+      console.log("Stores Response:", JSON.stringify(storesRes, null, 2));
+      setStores(storesRes);
+
+      // Create list of unique companies from stores
+      const companyList = storesRes.reduce((companies, store) => {
+        if (
+          store.company &&
+          !companies.some((c) => c.key === store.company._id)
+        ) {
+          companies.push({
+            key: store.company._id,
+            value: store.company.name || "Unknown Company",
+          });
+        }
+        return companies;
+      }, []);
+
+      console.log("Companies List:", companyList);
+      setCompanies(companyList);
+    } catch (err) {
+      console.error("Load Data Error:", err);
+      alert("Error loading stores");
+    }
   };
+  const handleStorePress = async (store) => {
+    try {
+      const receiptsRes = await RecieptsService.getRecieptsDetailed();
+      const storeReceipts = receiptsRes.response.filter(
+        (receipt) => receipt.store._id === store._id
+      );
+      setSelectedStore(store);
+      setStoreReceipts(storeReceipts);
+      setDetailsModal(true);
+    } catch (err) {
+      console.error(err);
+      alert("Error loading receipts");
+    }
+  };
+
+  const filteredStores = selectedCompanyPib
+    ? stores.filter((store) => store.company?._id === selectedCompanyPib)
+    : stores;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -190,143 +82,243 @@ const MapScreen = () => {
           longitudeDelta: 0.0421,
         }}
       >
-        {markers &&
-          markers.map((marker, index) => (
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: marker["latitude"],
-                longitude: marker["longitude"],
-              }}
-            >
-              <Callout tooltip>
-                <View
-                  style={{
-                    backgroundColor: "white",
-                    borderColor: "black",
-                    borderRadius: 5,
-                    padding: 20,
-                  }}
-                >
-                  <Text style={{ fontWeight: "bold" }}>{marker["naziv"]}</Text>
-                  <Text style={{ marginTop: 10 }}>
-                    {marker["grad"] + "\n" + marker["adresa"]}
-                  </Text>
-                </View>
-              </Callout>
-            </Marker>
-          ))}
+        {filteredStores.map((store, index) => (
+          <Marker
+            key={index}
+            coordinate={{
+              latitude: store.x,
+              longitude: store.y,
+            }}
+            onPress={() => handleStorePress(store)}
+          >
+            <Callout tooltip>
+              <View style={styles.calloutContainer}>
+                <Text style={styles.calloutTitle}>{store.name}</Text>
+                <Text style={styles.calloutText}>
+                  {store.city}
+                  {"\n"}
+                  {store.address}
+                </Text>
+              </View>
+            </Callout>
+          </Marker>
+        ))}
       </MapView>
-      <View style={styles.selectBox}>
-        <Text style={styles.selectHeader}>Izaberi Firmu:</Text>
+
+      <View style={styles.filterBox}>
+        <Text style={styles.filterHeader}>Filter by Company:</Text>
         <SelectList
+          setSelected={setSelectedCompanyPib}
+          data={[{ key: "all", value: "All Companies" }, ...companies]}
           boxStyles={styles.selectList}
-          dropdownItemStyles={styles.selectListItem}
-          dropdownStyles={styles.selectListDropdown}
-          setSelected={(val) => setSelected(val)}
-          data={listBoxData}
-          save="value"
-          onSelect={handleSelect}
+          save="key"
+          onSelect={() => {
+            if (selectedCompanyPib === "all") {
+              setSelectedCompanyPib(null);
+            }
+          }}
         />
       </View>
-      <View style={styles.dataBox}>
-        {!rawDataCopy?.length ? (
-          <Text style={{ textAlign: "center" }}>No Data</Text>
-        ) : (
-          rawDataCopy?.map((item, index) => {
-            return (
-              <View key={index} style={styles.dataItem}>
-                <Text style={styles.dataText}>Naziv: {item?.naziv}</Text>
-                <Text style={styles.dataText}>Grad: {item?.grad}</Text>
-                <Text style={styles.dataText}>Adresa: {item?.adresa}</Text>
-                <Text style={styles.dataText}>PIB: {item?.pib}</Text>
-              </View>
-            );
-          })
-        )}
+
+      <View style={styles.storeList}>
+        {filteredStores.map((store, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.storeCard}
+            onPress={() => handleStorePress(store)}
+          >
+            <Text style={styles.storeName}>{store.name}</Text>
+            <Text style={styles.storeCompany}>{store.company?.name}</Text>
+            <Text style={styles.storeAddress}>{store.address}</Text>
+            <Text style={styles.storeCity}>{store.city}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      <Modal
+        visible={detailsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setDetailsModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{selectedStore?.name}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setDetailsModal(false)}
+              >
+                <Text style={styles.closeButtonText}>×</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView>
+              <View style={styles.storeInfo}>
+                <Text style={styles.infoText}>
+                  Company: {selectedStore?.company?.name}
+                </Text>
+                <Text style={styles.infoText}>
+                  Address: {selectedStore?.address}
+                </Text>
+                <Text style={styles.infoText}>City: {selectedStore?.city}</Text>
+              </View>
+
+              <Text style={styles.receiptHeader}>
+                Receipts from this store:
+              </Text>
+              {storeReceipts.map((receipt, index) => (
+                <View key={index} style={styles.receiptCard}>
+                  <Text style={styles.receiptDate}>
+                    {new Date(receipt.date).toLocaleDateString()}
+                  </Text>
+                  <Text style={styles.receiptTotal}>
+                    Total: {receipt.total.toFixed(2)} RSD
+                  </Text>
+                  <Text style={styles.receiptItems}>
+                    Items: {receipt.items.length}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
-};
-
-export default MapScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    justifyContent: "center",
-    alignItems: "flex-start",
   },
   map: {
     width: "100%",
     aspectRatio: 1,
   },
-  selectBox: {
+  filterBox: {
     width: "100%",
     padding: 20,
   },
-  selectHeader: {
+  filterHeader: {
     fontSize: 20,
-    textAlign: "left",
-    width: "100%",
-    marginBottom: 5,
+    marginBottom: 10,
   },
   selectList: {
-    width: "100%",
     borderColor: "#0782F9",
     backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
   },
-  selectListItem: {
-    borderColor: "#0782F9",
-    borderBottomWidth: 1,
-  },
-  selectListDropdown: {
-    backgroundColor: "#fff",
-    borderColor: "#0782F9",
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-  },
-  dataBox: {
-    width: "100%",
+  storeList: {
     padding: 20,
-    paddingTop: 0,
   },
-  dataItem: {
-    width: "100%",
-    // borderColor: "#0782F9",
+  storeCard: {
     backgroundColor: "#fff",
-    // borderWidth: 1,
-    borderRadius: 10,
     padding: 15,
+    borderRadius: 10,
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
+    elevation: 3,
   },
-  dataText: {
-    fontWeight: "600",
-    marginBottom: 8,
+  storeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  storeCompany: {
+    fontSize: 16,
+    color: "#0782F9",
+    marginBottom: 5,
+  },
+  storeAddress: {
+    fontSize: 14,
+    color: "#666",
+  },
+  storeCity: {
+    fontSize: 14,
+    color: "#666",
+  },
+  calloutContainer: {
+    backgroundColor: "white",
+    borderRadius: 6,
+    padding: 15,
+    maxWidth: 200,
+  },
+  calloutTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  calloutText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "90%",
+    maxHeight: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#0782F9",
+    borderBottomColor: "#eee",
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#0782F9",
+  },
+  closeButton: {
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 30,
+    color: "#666",
+  },
+  storeInfo: {
+    backgroundColor: "#f8f8f8",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  infoText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  receiptHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#0782F9",
+  },
+  receiptCard: {
+    backgroundColor: "#f8f8f8",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  receiptDate: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  receiptTotal: {
+    fontSize: 16,
+    color: "#0782F9",
+    marginTop: 5,
+  },
+  receiptItems: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
   },
 });
