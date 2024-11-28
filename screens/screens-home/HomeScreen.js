@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/core";
+
 import UserService from "@/services/user.service";
+import theme from "@/styles/theme";
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState("user"); // Initialize username state with null
-  const [loading, setLoading] = useState(true); // Initialize loading state
+  const [username, setUsername] = useState("user");
+  const [loading, setLoading] = useState(true);
   const fetchUsername = async () => {
     try {
       const response = await UserService.getUserData();
@@ -15,11 +17,11 @@ const HomeScreen = () => {
     } catch (error) {
       console.error("Error fetching username:", error);
     } finally {
-      setLoading(false); // Update loading state when fetching is done (whether successful or not)
+      setLoading(false);
     }
   };
   useEffect(() => {
-    fetchUsername(); // Call the fetchUsername function when component mounts
+    fetchUsername();
   }, []);
 
   const screenScanner = () => {
@@ -48,62 +50,4 @@ const HomeScreen = () => {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 20,
-  },
-  containerTop: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: "80%",
-    // backgroundColor:'#fafafa',
-    borderRadius: 15,
-    aspectRatio: 2 / 1,
-  },
-  containerTopText: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#0782F9",
-  },
-  containerBottom: {
-    // borderWidth: 2,
-    // borderColor: "red",
-    padding: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  buttonScanner: {
-    backgroundColor: "#0782F9",
-    width: "80%",
-    aspectRatio: 1 / 1,
-    borderRadius: 10,
-    padding: 30,
-    paddingTop: 15,
-    marginBottom: 15,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-  },
-  buttonScannerText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
-    paddingBottom: 13,
-  },
-  logo: {
-    objectFit: "contain",
-    borderRadius: 10,
-    height: 250,
-    aspectRatio: 1 / 1,
-  },
-});
+const styles = StyleSheet.create({ ...theme.home });

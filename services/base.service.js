@@ -13,25 +13,6 @@ export class BaseService {
 
     this.request = new RequestService(collectionName);
   }
-
-  // TODO: add options = {}
-  // async get(id) {
-  //   return await this.request.get(`/${this.collectionName}${id}`);
-  // }
-  // async post(id) {
-  //   return await this.request.post(`/${this.collectionName}${id}`);
-  // }
-  // async put(id) {
-  //   return await this.request.put(`/${this.collectionName}${id}`);
-  // }
-  // async delete(id) {
-  //   return await this.request.delete(`/${this.collectionName}${id}`);
-  // }
-
-  // async update(id, body) {
-  //   return await this.request.put(`/${this.collectionName}${id}`, body);
-  // }
-
   async create(body, options = {}) {
     const { queryParams, path, ...other } = options;
 

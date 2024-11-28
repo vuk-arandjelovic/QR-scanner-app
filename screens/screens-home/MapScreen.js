@@ -11,6 +11,7 @@ import { SelectList } from "react-native-dropdown-select-list";
 import MapView, { Callout, Marker } from "react-native-maps";
 import StoresService from "@/services/stores.service";
 import RecieptsService from "@/services/reciepts.service";
+import theme from "@/styles/theme";
 
 export default function MapScreen() {
   const [stores, setStores] = useState([]);
@@ -189,136 +190,6 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-  },
-  map: {
-    width: "100%",
-    aspectRatio: 1,
-  },
-  filterBox: {
-    width: "100%",
-    padding: 20,
-  },
-  filterHeader: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
-  selectList: {
-    borderColor: "#0782F9",
-    backgroundColor: "#fff",
-  },
-  storeList: {
-    padding: 20,
-  },
-  storeCard: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    elevation: 3,
-  },
-  storeName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  storeCompany: {
-    fontSize: 16,
-    color: "#0782F9",
-    marginBottom: 5,
-  },
-  storeAddress: {
-    fontSize: 14,
-    color: "#666",
-  },
-  storeCity: {
-    fontSize: 14,
-    color: "#666",
-  },
-  calloutContainer: {
-    backgroundColor: "white",
-    borderRadius: 6,
-    padding: 15,
-    maxWidth: 200,
-  },
-  calloutTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  calloutText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "90%",
-    maxHeight: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0782F9",
-  },
-  closeButton: {
-    padding: 5,
-  },
-  closeButtonText: {
-    fontSize: 30,
-    color: "#666",
-  },
-  storeInfo: {
-    backgroundColor: "#f8f8f8",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  infoText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  receiptHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#0782F9",
-  },
-  receiptCard: {
-    backgroundColor: "#f8f8f8",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  receiptDate: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  receiptTotal: {
-    fontSize: 16,
-    color: "#0782F9",
-    marginTop: 5,
-  },
-  receiptItems: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 5,
-  },
+  ...theme.map,
+  ...theme.shared,
 });

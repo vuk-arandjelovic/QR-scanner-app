@@ -1,8 +1,5 @@
-import { StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-// import { createDrawerNavigator } from '@react-navigation/drawer';
 import { RootSiblingParent } from "react-native-root-siblings";
-
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   LoginScreen,
@@ -15,13 +12,10 @@ import { decode, encode } from "base-64";
 if (!global.btoa) {
   global.btoa = encode;
 }
-
 if (!global.atob) {
   global.atob = decode;
 }
-
 const Welcome = createNativeStackNavigator();
-// const Drawer = createDrawerNavigator();
 
 export default function App() {
   const navOptions = {
@@ -62,12 +56,3 @@ export default function App() {
     </RootSiblingParent>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

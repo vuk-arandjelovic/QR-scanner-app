@@ -8,11 +8,13 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/core";
-import { Camera, CameraView } from "expo-camera";
-import ScrapeService from "@/services/scrape.service";
-import Toast from "react-native-root-toast";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Camera, CameraView } from "expo-camera";
+
+import Toast from "react-native-root-toast";
+import ScrapeService from "@/services/scrape.service";
+import { useNavigation } from "@react-navigation/core";
+import theme from "@/styles/theme";
 
 const ScannerScreen = () => {
   const navigator = useNavigation();
@@ -183,88 +185,9 @@ const ScannerScreen = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: "relative",
-  },
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  unfocusedContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-  },
-  middleContainer: {
-    flexDirection: "row",
-    flex: 1.5,
-  },
-  focusedContainer: {
-    flex: 6,
-  },
-  animationLineStyle: {
-    height: 2,
-    width: "100%",
-    backgroundColor: "#0782F9",
-  },
-  rescanIconContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-  },
+  ...theme.scanner,
 });
+
 export default ScannerScreen;
-
-// STARI KOD, RADI ALI NEMA ANIMACIJE - NEDOVRSEN ZBOG DUGMICA
-//   return (
-//     <View style={styles.container}>
-//       <BarCodeScanner
-//         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-//         style={styles.camera}
-//       >
-//       <Button title={'Tap to go back'} style={styles.buttonBack} onPress={handleBack}/>
-//       </BarCodeScanner>
-//       {scanned && <Button title={'Tap to Scan Again'} style={styles.buttonScan} onPress={() => setScanned(false)} />}
-//     </View>
-//   );
-// }
-
-// export default ScannerScreen;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     position:'relative',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     width:"100%",
-//     height:"100%",
-//     // paddingBottom:80,
-//   },
-//   camera:{
-//     // ...StyleSheet.absoluteFillObject,
-//     position:'absolute',
-//     width:"100%",
-//     height:"100%",
-//     backgroundColor: 'transparent',
-//     justifyContent:"flex-end"
-//   },
-//   buttonScan:{
-//     position:'absolute',
-//     width: "100%",
-//     borderWidth: 2,
-//     borderColor: "red",
-//   },
-//   buttonBack:{
-//     position: 'relative',
-//     width: "100%",
-//   },
-// });

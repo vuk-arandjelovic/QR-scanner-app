@@ -3,6 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import UserService from "@/services/user.service";
 import RecieptsService from "@/services/reciepts.service";
+import theme from "@/styles/theme";
 
 const ProfileScreen = () => {
   const [userData, setUserData] = useState(null);
@@ -159,105 +160,8 @@ const ProfileScreen = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  profileHeader: {
-    backgroundColor: "#0782F9",
-    padding: 30,
-    alignItems: "center",
-  },
-  username: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 5,
-  },
-  email: {
-    fontSize: 16,
-    color: "#fff",
-    opacity: 0.9,
-  },
-  statsContainer: {
-    padding: 15,
-  },
-  statRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-  statCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 15,
-    flex: 0.48,
-    alignItems: "center",
-    elevation: 3,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0782F9",
-    marginBottom: 5,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#666",
-  },
-  financialCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 15,
-    elevation: 3,
-  },
-  cardHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#0782F9",
-    marginBottom: 15,
-  },
-  cardRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  cardLabel: {
-    fontSize: 16,
-    color: "#666",
-  },
-  cardValue: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
-  },
-  highlightsCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    elevation: 3,
-  },
-  highlight: {
-    marginBottom: 15,
-  },
-  highlightLabel: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 5,
-  },
-  highlightValue: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#333",
-  },
-  highlightSubtext: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-  },
+  ...theme.profile,
 });
 
 export default ProfileScreen;

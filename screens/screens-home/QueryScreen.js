@@ -10,6 +10,7 @@ import {
   Modal,
 } from "react-native";
 import ItemsService from "@/services/items.service";
+import theme from "@/styles/theme";
 
 export default function QueryScreen() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -135,9 +136,6 @@ export default function QueryScreen() {
               {searchQuery ? "No items found" : "Enter a search term to begin"}
             </Text>
           )}
-          {/* {items.length === 0 && searchQuery && !loading && (
-            <Text style={styles.noResults}>No items found</Text>
-          )} */}
         </ScrollView>
       )}
       <PriceHistoryModal
@@ -151,159 +149,4 @@ export default function QueryScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  noHistoryText: {
-    textAlign: "center",
-    color: "#666",
-    marginTop: 20,
-    fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 15,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    marginBottom: 15,
-  },
-  searchInput: {
-    flex: 1,
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 12,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: "#0782F9",
-  },
-  searchButton: {
-    backgroundColor: "#0782F9",
-    borderRadius: 10,
-    padding: 12,
-    justifyContent: "center",
-  },
-  searchButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  loader: {
-    marginTop: 20,
-  },
-  resultsContainer: {
-    flex: 1,
-  },
-  itemCard: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    elevation: 3,
-  },
-  itemName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  priceContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  priceLabel: {
-    fontSize: 16,
-    color: "#666",
-  },
-  priceValue: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#0782F9",
-  },
-  dateText: {
-    color: "#666",
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  historyButton: {
-    backgroundColor: "#f0f0f0",
-    padding: 8,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  historyButtonText: {
-    color: "#0782F9",
-    fontWeight: "500",
-  },
-  noResults: {
-    textAlign: "center",
-    color: "#666",
-    marginTop: 20,
-    fontSize: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "90%",
-    maxHeight: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-    elevation: 5,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#0782F9",
-  },
-  closeButton: {
-    padding: 5,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: "#666",
-  },
-  priceHistoryContainer: {
-    maxHeight: "80%",
-  },
-  pricesList: {
-    paddingHorizontal: 5,
-  },
-  priceHistoryItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  priceHistoryDate: {
-    fontSize: 16,
-    color: "#666",
-  },
-  priceHistoryValue: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#0782F9",
-  },
-  noHistoryText: {
-    textAlign: "center",
-    color: "#666",
-    marginTop: 20,
-    fontSize: 16,
-  },
-});
+const styles = StyleSheet.create({ ...theme.query, ...theme.shared });

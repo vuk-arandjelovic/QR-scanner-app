@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/core";
 import AuthService from "@/services/auth.service";
 import StorageService from "@/services/storage.service";
+import theme from "@/styles/theme";
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -55,52 +56,4 @@ const WelcomeScreen = () => {
 
 export default WelcomeScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#0782F9",
-  },
-  logoContainer: {
-    width: "75%",
-  },
-  logo: {
-    objectFit: "contain",
-    borderRadius: 15,
-    height: 250,
-    aspectRatio: 1 / 1,
-  },
-  buttonContainer: {
-    width: "60%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: "#0782F9",
-    width: "100%",
-    padding: 15,
-    borderRadius: 15,
-    marginTop: 15,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FAFAFA",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  // Button Variant
-  buttonOutline: {
-    backgroundColor: "white",
-    borderColor: "#0782F9",
-    borderWidth: 2,
-  },
-  buttonOutlineText: {
-    color: "#0782F9",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-});
+const styles = StyleSheet.create({ ...theme.welcome });

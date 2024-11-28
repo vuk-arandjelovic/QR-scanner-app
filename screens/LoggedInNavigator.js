@@ -5,20 +5,17 @@ import {
   ReceiptScreen,
   QueryScreen,
   GuaranteeScreen,
-  Tester,
   ScannerScreen,
   LogOutScreen,
 } from "./screens-home";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 const LoggedIn = createDrawerNavigator();
-
 export default function LoggedInNavigator() {
   const navOptions = {
     headerTintColor: "#fafafa",
     headerStyle: { backgroundColor: "#0782F9" },
   };
-
   return (
     <LoggedIn.Navigator
       initialRouteName="Home"
@@ -62,18 +59,17 @@ export default function LoggedInNavigator() {
         component={GuaranteeScreen}
         options={navOptions}
       />
-      <LoggedIn.Screen name="Tester" component={Tester} options={navOptions} />
       <LoggedIn.Screen
         options={{
           headerShown: false,
           drawerItemStyle: {
+            marginTop: "140%",
             // borderColor: "#f0f0f0",
             // borderWidth: 5,
             // borderStyle: "solid",
             // position: "absolute",
             // width: "93%",
             // bottom: 50,
-            marginTop: "140%",
             // justifyContent: "flex-end",
             // alignSelf: "flex-end",
           },
@@ -84,5 +80,4 @@ export default function LoggedInNavigator() {
       />
     </LoggedIn.Navigator>
   );
-  //marginTop: "140%",
 }

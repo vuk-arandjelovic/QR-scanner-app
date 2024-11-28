@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-
 import {
   StyleSheet,
   Text,
@@ -10,8 +9,10 @@ import {
   Modal,
   TextInput,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { SelectList } from "react-native-dropdown-select-list";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+import theme from "@/styles/theme";
 import RecieptsService from "@/services/reciepts.service";
 import GuaranteeService from "@/services/guarantee.service";
 import StoresService from "@/services/stores.service";
@@ -34,7 +35,6 @@ export default function GuaranteeScreen() {
   const [editModal, setEditModal] = useState(false);
   const [editingGuarantee, setEditingGuarantee] = useState(null);
   const [detailsModal, setDetailsModal] = useState(false);
-  const [selectedGuarantee, setSelectedGuarantee] = useState(null);
   const [billDetails, setBillDetails] = useState(null);
 
   const getUserId = async () => {
@@ -182,7 +182,6 @@ export default function GuaranteeScreen() {
     }
   };
   const handleCardPress = async (guarantee) => {
-    setSelectedGuarantee(guarantee);
     try {
       const billData = await RecieptsService.getReciept(guarantee.bill);
       setBillDetails(billData.response);
@@ -461,275 +460,4 @@ export default function GuaranteeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  container: {
-    flex: 1,
-  },
-  header: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#0782F9",
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  content: {
-    padding: 20,
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#0782F9",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-  },
-  addButtonText: {
-    fontSize: 30,
-    color: "white",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "90%",
-    maxHeight: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-    elevation: 5,
-  },
-  modalHeader: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  formContainer: {
-    width: "100%",
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    marginTop: 10,
-  },
-  selectBox: {
-    borderWidth: 1,
-    borderColor: "#0782F9",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#0782F9",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  button: {
-    flex: 1,
-    padding: 15,
-    borderRadius: 8,
-    marginHorizontal: 5,
-  },
-  cancelButton: {
-    alignItems: "center",
-    backgroundColor: "#ff4444",
-  },
-  submitButton: {
-    alignItems: "center",
-    backgroundColor: "#0782F9",
-  },
-  buttonText: {
-    color: "white",
-    width: "100%",
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  dateInput: {
-    borderWidth: 1,
-    borderColor: "#0782F9",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 10,
-  },
-  dateText: {
-    color: "#000",
-  },
-  guaranteeCard: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    elevation: 3,
-  },
-  guaranteeHeader: {
-    marginBottom: 8,
-  },
-  guaranteeName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  itemName: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-  },
-  guaranteeDate: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 10,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 10,
-  },
-  cardButton: {
-    padding: 8,
-    borderRadius: 5,
-    minWidth: 70,
-    alignItems: "center",
-  },
-  editButton: {
-    backgroundColor: "#0782F9",
-  },
-  deleteButton: {
-    backgroundColor: "#ff4444",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  detailsModal: {
-    maxHeight: "80%",
-  },
-  detailsSection: {
-    marginBottom: 20,
-    padding: 15,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 10,
-  },
-  detailsHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#0782F9",
-    marginBottom: 10,
-  },
-  detailItem: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  itemRow: {
-    flexDirection: "column",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  itemDetails: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-  },
-  closeButton: {
-    marginTop: 10,
-    backgroundColor: "#0782F9",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "90%",
-    maxHeight: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-    elevation: 5,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0782F9",
-  },
-  closeButton: {
-    padding: 5,
-  },
-  closeButtonText: {
-    fontSize: 30,
-    color: "#666",
-  },
-  section: {
-    marginBottom: 20,
-    padding: 15,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#0782F9",
-    marginBottom: 10,
-  },
-  detailText: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: "#333",
-  },
-  itemCard: {
-    backgroundColor: "white",
-    padding: 10,
-    marginBottom: 8,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  itemDetails: {
-    fontSize: 14,
-    color: "#666",
-  },
-  itemTotal: {
-    fontSize: 15,
-    fontWeight: "500",
-    marginTop: 4,
-    color: "#0782F9",
-  },
-});
+const styles = StyleSheet.create({ ...theme.guarantee, ...theme.shared });

@@ -5,7 +5,6 @@ import ReceiptScreen_ from "./ReceiptScreen";
 import QueryScreen_ from "./QueryScreen";
 import MapScreen_ from "./MapScreen";
 import GuaranteeScreen_ from "./GuaranteeScreen";
-import Tester_ from "./ScannerScreen";
 import LogOutScreen_ from "./LogOutScreen";
 
 export const HomeScreen = HomeScreen_;
@@ -15,5 +14,4 @@ export const ReceiptScreen = ReceiptScreen_;
 export const QueryScreen = QueryScreen_;
 export const MapScreen = MapScreen_;
 export const GuaranteeScreen = GuaranteeScreen_;
-export const Tester = Tester_;
 export const LogOutScreen = LogOutScreen_;

@@ -1,5 +1,4 @@
 import { BaseService } from "./base.service";
-import { CONFIG } from "../config";
 
 export class StoresService extends BaseService {
   constructor() {
