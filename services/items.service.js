@@ -12,5 +12,8 @@ export class ItemsService extends BaseService {
   getFromBill(billId) {
     return this.request.get(`/getFromBill?billId=${billId}`);
   }
+  searchItems(query) {
+    return this.request.get(`/search?name=${encodeURIComponent(query)}`);
+  }
 }
 export default new ItemsService();

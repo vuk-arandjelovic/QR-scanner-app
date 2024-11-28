@@ -1,181 +1,309 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
-  ScrollView,
+  TextInput,
   View,
-  Image,
-  Modal,
+  ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
+  Modal,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import apiExporter from "../../API/apiExporter";
-const api = apiExporter;
+import ItemsService from "@/services/items.service";
 
-const QueryScreen = () => {
-  const [rawData, setRawData] = useState([]);
+export default function QueryScreen() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [historyModalVisible, setHistoryModalVisible] = useState(false);
 
-  useEffect(() => {
-    api.getRacunAll().then((res) => {
-      setRawData(res);
-    });
-  }, []);
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
 
-  const handleFilter = () => {
-    console.log(rawData);
-    alert("triggered filter");
+    setLoading(true);
+    try {
+      const response = await ItemsService.searchItems(searchQuery);
+      setItems(response.response);
+    } catch (err) {
+      console.error(err);
+      alert("Error searching items");
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleDetails = (item) => {
+  const handleHistoryPress = (item) => {
+    console.log("Opening history for item:", item); // Debug log
+
     setSelectedItem(item);
-    setIsModalVisible(true);
-    console.log(item);
+    setHistoryModalVisible(true);
   };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={{ fontSize: 30 }}>Skenirani Racuni:</Text>
-        <TouchableOpacity style={styles.filter} onPress={handleFilter}>
-          <Image
-            style={styles.filterIcon}
-            source={require("../../assets/filter_icon.png")}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.content}>
-        {rawData.map((item, index) => (
-          <TouchableOpacity
-            style={styles.contentItem}
-            key={index}
-            onPress={() => handleDetails(item)}
-          >
-            <View>
-              <Text style={{ fontSize: 25 }}>{item?.prodavnica?.naziv}</Text>
-              <Text>{item?.pfrVreme}</Text>
-            </View>
-            <Text style={{ fontSize: 20 }}>{item?.ukupanIznos}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <Modal visible={isModalVisible} animationType="fade" transparent={true}>
-        <View
-          style={{
-            backgroundColor: "#00000080",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+  const PriceHistoryModal = ({ visible, item, onClose }) => {
+    return (
+      <Modal
+        visible={visible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalHeader}>Details</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-            {selectedItem && (
-              <View style={styles.modalContent}>
-                <Text>{selectedItem?.prodavnica?.naziv}</Text>
-                <Text>{selectedItem?.pfrVreme}</Text>
-              </View>
-            )}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{item?.name}</Text>
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>×</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.priceHistoryContainer}>
+              {item?.prices?.length > 0 ? (
+                <View style={styles.pricesList}>
+                  {item.prices.map((price, index) => (
+                    <View key={index} style={styles.priceHistoryItem}>
+                      <Text style={styles.priceHistoryDate}>
+                        {new Date(price.date).toLocaleDateString()}
+                      </Text>
+                      <Text style={styles.priceHistoryValue}>
+                        {price.price.toFixed(2)} RSD
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text style={styles.noHistoryText}>
+                  No price history available
+                </Text>
+              )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
-    </ScrollView>
-  );
-};
+    );
+  };
+  return (
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search items..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
+          returnKeyType="search"
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
 
-export default QueryScreen;
+      {loading ? (
+        <ActivityIndicator size="large" color="#0782F9" style={styles.loader} />
+      ) : (
+        <ScrollView style={styles.resultsContainer}>
+          {items && items.length > 0 ? (
+            items.map((item, index) => {
+              const latestPrice = item.prices.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+              )[0];
+              return (
+                <View key={index} style={styles.itemCard}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <View style={styles.priceContainer}>
+                    <Text style={styles.priceLabel}>Latest Price:</Text>
+                    <Text style={styles.priceValue}>
+                      {latestPrice?.price.toFixed(2)} RSD
+                    </Text>
+                  </View>
+                  <Text style={styles.dateText}>
+                    Last updated:{" "}
+                    {new Date(latestPrice?.date).toLocaleDateString()}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.historyButton}
+                    onPress={() => handleHistoryPress(item)}
+                  >
+                    <Text style={styles.historyButtonText}>
+                      View Price History
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            })
+          ) : (
+            <Text style={styles.noResults}>
+              {searchQuery ? "No items found" : "Enter a search term to begin"}
+            </Text>
+          )}
+          {/* {items.length === 0 && searchQuery && !loading && (
+            <Text style={styles.noResults}>No items found</Text>
+          )} */}
+        </ScrollView>
+      )}
+      <PriceHistoryModal
+        visible={historyModalVisible}
+        item={selectedItem}
+        onClose={() => {
+          setHistoryModalVisible(false);
+          setSelectedItem(null);
+        }}
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
+  noHistoryText: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
+  },
   container: {
-    width: "100%",
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 15,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    marginBottom: 15,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 12,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: "#0782F9",
+  },
+  searchButton: {
+    backgroundColor: "#0782F9",
+    borderRadius: 10,
+    padding: 12,
+    justifyContent: "center",
+  },
+  searchButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  loader: {
     marginTop: 20,
   },
-  header: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 10,
-    borderBottomColor: "#0782F9",
-    borderBottomWidth: 2,
-    marginHorizontal: 20,
+  resultsContainer: {
+    flex: 1,
   },
-  filter: {
+  itemCard: {
+    backgroundColor: "white",
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-  },
-  filterIcon: {
-    aspectRatio: 1 / 1,
-    height: 40,
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-  },
-  content: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  contentItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    padding: 15,
     marginBottom: 10,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
+    elevation: 3,
+  },
+  itemName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  priceLabel: {
+    fontSize: 16,
+    color: "#666",
+  },
+  priceValue: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#0782F9",
+  },
+  dateText: {
+    color: "#666",
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  historyButton: {
+    backgroundColor: "#f0f0f0",
+    padding: 8,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  historyButtonText: {
+    color: "#0782F9",
+    fontWeight: "500",
+  },
+  noResults: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContainer: {
-    top: 90,
-    height: "75%",
     width: "90%",
-    alignSelf: "center",
-    // justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
+    maxHeight: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
   },
   modalHeader: {
-    fontSize: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  modalTitle: {
+    fontSize: 20,
     fontWeight: "bold",
-    margin: 15,
+    color: "#0782F9",
   },
   closeButton: {
-    position: "absolute",
-    top: 20,
-    right: 20,
+    padding: 5,
   },
   closeButtonText: {
-    fontSize: 18,
-    color: "#007AFF",
+    fontSize: 24,
+    color: "#666",
   },
-  modalContent: {
-    padding: 20,
+  priceHistoryContainer: {
+    maxHeight: "80%",
+  },
+  pricesList: {
+    paddingHorizontal: 5,
+  },
+  priceHistoryItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  priceHistoryDate: {
+    fontSize: 16,
+    color: "#666",
+  },
+  priceHistoryValue: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#0782F9",
+  },
+  noHistoryText: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
   },
 });
