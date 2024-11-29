@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   StyleSheet,
@@ -8,9 +8,11 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  RefreshControl,
 } from "react-native";
-import RecieptsService from "@/services/reciepts.service";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+import RecieptsService from "@/services/reciepts.service";
 import StorageService from "@/services/storage.service";
 import theme from "@/styles/theme";
 
@@ -21,7 +23,21 @@ export default function ReceiptScreen() {
   const [detailsModal, setDetailsModal] = useState(false);
   const [filterModal, setFilterModal] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const res = await RecieptsService.getRecieptsDetailed();
+      setReceipts(res.response);
+      setFilteredReceipts(res.response);
+    } catch (error) {
+      console.error("Error refreshing:", error);
+      alert("Error refreshing receipts");
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
   const getUserId = async () => {
     try {
       const userId = await StorageService.getUserId();
@@ -215,8 +231,18 @@ export default function ReceiptScreen() {
           <Text style={styles.filterButtonText}>Filter</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView style={styles.content}>
-        {filteredReceipts.reverse().map((receipt) => (
+      <ScrollView
+        style={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#0782F9"]}
+            tintColor="#0782F9"
+          />
+        }
+      >
+        {filteredReceipts.map((receipt) => (
           <TouchableOpacity
             key={receipt._id}
             style={styles.receiptCard}

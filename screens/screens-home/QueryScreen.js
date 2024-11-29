@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
+  RefreshControl,
 } from "react-native";
 import ItemsService from "@/services/items.service";
 import theme from "@/styles/theme";
@@ -18,6 +19,20 @@ export default function QueryScreen() {
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [historyModalVisible, setHistoryModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      // Clear existing search results and input
+      setItems([]);
+      setSearchQuery("");
+    } catch (error) {
+      console.error("Error refreshing:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -101,7 +116,17 @@ export default function QueryScreen() {
       {loading ? (
         <ActivityIndicator size="large" color="#0782F9" style={styles.loader} />
       ) : (
-        <ScrollView style={styles.resultsContainer}>
+        <ScrollView
+          style={styles.resultsContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#0782F9"]}
+              tintColor="#0782F9"
+            />
+          }
+        >
           {items && items.length > 0 ? (
             items.map((item, index) => {
               const latestPrice = item.prices.sort(
