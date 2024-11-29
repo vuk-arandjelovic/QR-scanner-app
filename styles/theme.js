@@ -468,6 +468,13 @@ export const shared = {
     marginTop: 4,
     color: "#0782F9",
   },
+  logoutContainer: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+
+    borderColor: "#ccc",
+    marginBottom: 30,
+  },
 };
 
 export const query = {
@@ -623,7 +630,6 @@ export const receipts = {
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
   },
   button: {
     flex: 1,
@@ -745,6 +751,7 @@ export const guarantee = {
   },
   addButtonText: {
     fontSize: 30,
+    lineHeight: 30,
     color: "white",
   },
   formContainer: {

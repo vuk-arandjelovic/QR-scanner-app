@@ -216,7 +216,7 @@ export default function ReceiptScreen() {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.content}>
-        {filteredReceipts.map((receipt) => (
+        {filteredReceipts.reverse().map((receipt) => (
           <TouchableOpacity
             key={receipt._id}
             style={styles.receiptCard}

@@ -15,26 +15,13 @@ export class StorageService {
   }
 
   get namespace() {
-    // return window.location.hostname === "localhost" ||
-    //   window.location.hostname === "127.0.0.1"
-    //   ? `VUK_${this.name}__` || "VUK_PROJECT__"
-    //   : "VUK__";
-    return "VUK__";
+    return "QRScanner__";
   }
 
   init(storage) {
     if (storage !== undefined) this.storage = storage;
-    // if (!CONFIG.auth_token) {
-    //   console.log("no token found");
-    //   this.setConfigToken(null);
-    // }
   }
-  // async setConfigToken(token) {
-  //   console.log("token: ", token);
-  //   if (!token) CONFIG.auth_token = await AsyncStorage.getItem("token");
-  //   else CONFIG.auth_token = token;
-  //   console.log("config token: ", CONFIG.auth_token);
-  // }
+
   async set(key, value) {
     try {
       await AsyncStorage.setItem(
@@ -45,7 +32,6 @@ export class StorageService {
       console.error("Error setting item:", error);
     }
   }
-
   async put(key, value) {
     try {
       const existingValue = await this.get(key);
@@ -61,7 +47,6 @@ export class StorageService {
       console.error("Error putting item:", error);
     }
   }
-
   async get(key) {
     try {
       const value = await AsyncStorage.getItem(`${this.namespace}${key}`);
@@ -71,7 +56,6 @@ export class StorageService {
       return null;
     }
   }
-
   async getAll() {
     try {
       const keys = await AsyncStorage.getAllKeys();
@@ -83,7 +67,6 @@ export class StorageService {
       return [];
     }
   }
-
   async delete(key) {
     try {
       await AsyncStorage.removeItem(`${this.namespace}${key}`);
@@ -91,7 +74,6 @@ export class StorageService {
       console.error("Error deleting item:", error);
     }
   }
-
   async clear() {
     try {
       const keys = await AsyncStorage.getAllKeys();
@@ -105,22 +87,6 @@ export class StorageService {
   clearEntireStorage() {
     if (this.storage) this.storage.clear();
   }
-
-  update(type, data) {
-    try {
-      let logins = this.get("logins") || [];
-      logins = logins.map((login) => {
-        if (login[type].id === data.id) login[type] = data;
-
-        return login;
-      });
-
-      this.set("logins", logins);
-      this.set(type, data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
   async getUserId() {
     try {
       const token = await this.getToken();
@@ -133,18 +99,9 @@ export class StorageService {
       return null;
     }
   }
-
   getToken() {
     if (CONFIG.auth_token) return CONFIG.auth_token;
     return this.get("token");
-  }
-
-  get isLoggedIn() {
-    const account = this.storage.get("account");
-    const organization = this.storage.get("organization");
-    const privateKey = this.storage.get("privateKey");
-
-    return !!(account && organization && privateKey);
   }
 }
 

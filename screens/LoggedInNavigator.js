@@ -1,3 +1,10 @@
+import { View } from "react-native";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import {
   HomeScreen,
   MapScreen,
@@ -8,7 +15,23 @@ import {
   ScannerScreen,
   LogOutScreen,
 } from "./screens-home";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import theme from "@/styles/theme";
+
+function CustomDrawerContent(props) {
+  return (
+    <View style={{ flex: 1 }}>
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+      </DrawerContentScrollView>
+      <View style={theme.shared.logoutContainer}>
+        <DrawerItem
+          label="Log Out"
+          onPress={() => props.navigation.navigate("Log Out")}
+        />
+      </View>
+    </View>
+  );
+}
 
 const LoggedIn = createDrawerNavigator();
 export default function LoggedInNavigator() {
@@ -18,6 +41,7 @@ export default function LoggedInNavigator() {
   };
   return (
     <LoggedIn.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       initialRouteName="Home"
       backBehavior="firstRoute"
       screenOptions={{
@@ -62,21 +86,10 @@ export default function LoggedInNavigator() {
       <LoggedIn.Screen
         options={{
           headerShown: false,
-          drawerItemStyle: {
-            marginTop: "140%",
-            // borderColor: "#f0f0f0",
-            // borderWidth: 5,
-            // borderStyle: "solid",
-            // position: "absolute",
-            // width: "93%",
-            // bottom: 50,
-            // justifyContent: "flex-end",
-            // alignSelf: "flex-end",
-          },
+          drawerItemStyle: { display: "none" },
         }}
         name="Log Out"
         component={LogOutScreen}
-        style={{ alignSelf: "flex-end" }}
       />
     </LoggedIn.Navigator>
   );
