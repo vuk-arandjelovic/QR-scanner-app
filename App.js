@@ -8,6 +8,7 @@ import {
   LoggedInNavigator,
 } from "./screens";
 import { decode, encode } from "base-64";
+import { navigationRef } from "@/navigation";
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -25,7 +26,7 @@ export default function App() {
 
   return (
     <RootSiblingParent>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Welcome.Navigator
           initialRouteName="Welcome"
           backBehavior="firstRoute"

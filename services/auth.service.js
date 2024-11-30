@@ -8,6 +8,9 @@ export class AuthService extends BaseService {
   saveToken(token) {
     CONFIG.auth_token = token;
   }
+  refreshToken(oldToken) {
+    return this.request.post("/refresh", { token: oldToken });
+  }
   checkSession(token) {
     this.saveToken(token);
     return this.request.get(`/login`);

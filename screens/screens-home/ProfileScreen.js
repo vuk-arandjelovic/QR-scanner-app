@@ -28,11 +28,21 @@ const ProfileScreen = () => {
         UserService.getUserData(),
         RecieptsService.getRecieptsDetailed(),
       ]);
+      if (userRes.status === "error") {
+        console.error(userRes.message);
+        alert("Error loading profile data");
+        return;
+      }
+      if (receiptsRes.status === "error") {
+        console.error(receiptsRes.message);
+        alert("Error loading profile data");
+        return;
+      }
 
       setUserData(userRes.response);
       calculateStats(receiptsRes.response);
     } catch (err) {
-      console.error(err);
+      console.log(err);
       alert("Error loading profile data");
     }
   };
