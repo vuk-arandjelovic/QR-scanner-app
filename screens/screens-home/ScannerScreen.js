@@ -13,10 +13,11 @@ import { Camera, CameraView } from "expo-camera";
 
 import Toast from "react-native-root-toast";
 import ScrapeService from "@/services/scrape.service";
-import { useNavigation } from "@react-navigation/core";
+import { useIsFocused, useNavigation } from "@react-navigation/core";
 import theme from "@/styles/theme";
 
 const ScannerScreen = () => {
+  const isFocused = useIsFocused;
   const navigator = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -99,8 +100,8 @@ const ScannerScreen = () => {
     try {
       const res = await ScrapeService.scrape(data);
       console.log(res);
-      if (res.error) {
-        showToast(res.error, "error");
+      if (res.status === "error") {
+        showToast(res.message, "error");
       } else {
         showToast("Bill processed successfully", "success");
 
@@ -128,13 +129,15 @@ const ScannerScreen = () => {
 
   return (
     <View style={styles.container}>
-      <CameraView
-        onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ["qr"],
-        }}
-        style={StyleSheet.absoluteFillObject}
-      />
+      {isFocused && (
+        <CameraView
+          onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr"],
+          }}
+          style={StyleSheet.absoluteFillObject}
+        />
+      )}
       <View style={styles.overlay}>
         <View style={styles.unfocusedContainer}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>

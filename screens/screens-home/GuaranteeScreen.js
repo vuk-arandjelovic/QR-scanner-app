@@ -70,7 +70,12 @@ export default function GuaranteeScreen() {
   const loadGuarantees = async () => {
     try {
       const res = await GuaranteeService.getUserGuarantees();
-      setGuarantees(res);
+      if (res.status === "error") {
+        console.error(res.message);
+        alert("Error loading guarantees");
+        return;
+      }
+      setGuarantees(res.response);
     } catch (err) {
       console.error(err);
       alert("Error loading guarantees");
@@ -82,14 +87,23 @@ export default function GuaranteeScreen() {
         RecieptsService.getReciepts(),
         StoresService.getStores(),
       ]);
-
+      if (receiptsRes.status === "error") {
+        console.error(receiptsRes.message);
+        alert("Error loading receipts");
+        return;
+      }
+      if (storesRes.status === "error") {
+        console.error(storesRes.message);
+        alert("Error loading stores");
+        return;
+      }
       const storesMap = {};
-      storesRes.forEach((store) => {
+      storesRes.response.forEach((store) => {
         storesMap[store._id] = store.name;
       });
 
       setStores(storesMap);
-      setReceipts(receiptsRes);
+      setReceipts(receiptsRes.response);
     } catch (err) {
       console.error(err);
       alert("Error loading data");
@@ -102,7 +116,12 @@ export default function GuaranteeScreen() {
     if (receipt?.items?.length > 0) {
       try {
         const itemsRes = await ItemsService.getFromBill(receipt._id);
-        const formattedItems = itemsRes.map((item) => ({
+        if (itemsRes.status === "error") {
+          console.error("Error loading items:", itemsRes.message);
+          alert("Error loading items");
+          return;
+        }
+        const formattedItems = itemsRes.response.map((item) => ({
           key: item.itemId,
           value: `${item.amount}x ${item.name} - ${item.total.toFixed(2)} RSD`,
         }));

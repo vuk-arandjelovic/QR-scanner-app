@@ -30,10 +30,15 @@ export default function MapScreen() {
     try {
       const storesRes = await StoresService.getStores();
       console.log("Stores Response:", JSON.stringify(storesRes, null, 2));
-      setStores(storesRes);
+      if (storesRes.status === "error") {
+        console.error("Error loading stores:", storesRes.message);
+        alert("Error loading stores");
+        return;
+      }
+      setStores(storesRes.response);
 
       // Create list of unique companies from stores
-      const companyList = storesRes.reduce((companies, store) => {
+      const companyList = storesRes.response.reduce((companies, store) => {
         if (
           store.company &&
           !companies.some((c) => c.key === store.company._id)
