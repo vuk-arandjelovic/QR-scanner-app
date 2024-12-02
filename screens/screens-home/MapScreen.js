@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,7 +10,6 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import MapView, { Callout, Marker } from "react-native-maps";
-
 import StoresService from "@/services/stores.service";
 import RecieptsService from "@/services/reciepts.service";
 import theme from "@/styles/theme";
@@ -20,15 +19,36 @@ export default function MapScreen() {
   const [selectedStore, setSelectedStore] = useState(null);
   const [storeReceipts, setStoreReceipts] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState(null);
   const [detailsModal, setDetailsModal] = useState(false);
   const [selectedCompanyPib, setSelectedCompanyPib] = useState(null);
+  const mapRef = useRef(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
+  const calculateRegion = (stores) => {
+    if (!stores || stores.length === 0) return null;
+
+    let minLat = stores[0].x;
+    let maxLat = stores[0].x;
+    let minLng = stores[0].y;
+    let maxLng = stores[0].y;
+
+    stores.forEach((store) => {
+      minLat = Math.min(minLat, store.x);
+      maxLat = Math.max(maxLat, store.x);
+      minLng = Math.min(minLng, store.y);
+      maxLng = Math.max(maxLng, store.y);
+    });
+
+    const PADDING = 1.5;
+    const latDelta = (maxLat - minLat) * PADDING;
+    const lngDelta = (maxLng - minLng) * PADDING;
+
+    return {
+      latitude: (minLat + maxLat) / 2,
+      longitude: (minLng + maxLng) / 2,
+      latitudeDelta: Math.max(latDelta, 0.02),
+      longitudeDelta: Math.max(lngDelta, 0.02),
+    };
+  };
 
   const loadData = async () => {
     try {
@@ -40,7 +60,11 @@ export default function MapScreen() {
       }
       setStores(storesRes.response);
 
-      // Create list of unique companies from stores
+      const newRegion = calculateRegion(storesRes.response);
+      if (newRegion) {
+        mapRef.current?.animateToRegion(newRegion, 1000);
+      }
+
       const companyList = storesRes.response.reduce((companies, store) => {
         if (
           store.company &&
@@ -59,6 +83,7 @@ export default function MapScreen() {
       alert("Error loading stores");
     }
   };
+
   const handleStorePress = async (store) => {
     try {
       const receiptsRes = await RecieptsService.getRecieptsDetailed();
@@ -78,15 +103,57 @@ export default function MapScreen() {
     ? stores.filter((store) => store.company?._id === selectedCompanyPib)
     : stores;
 
+  useEffect(() => {
+    if (filteredStores?.length > 0 && mapRef.current) {
+      const coordinates = filteredStores.map((store) => ({
+        latitude: store.x,
+        longitude: store.y,
+      }));
+      mapRef.current.fitToCoordinates(coordinates, {
+        edgePadding: {
+          top: 100,
+          right: 100,
+          bottom: 100,
+          left: 100,
+        },
+        animated: true,
+      });
+    }
+  }, [filteredStores]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <MapView
+        ref={mapRef}
         style={styles.map}
         initialRegion={{
           latitude: 44.78825,
           longitude: 20.4324,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
+        }}
+        onMapReady={() => {
+          if (filteredStores?.length > 0) {
+            const coordinates = filteredStores.map((store) => ({
+              latitude: store.x,
+              longitude: store.y,
+            }));
+            mapRef.current?.fitToCoordinates(coordinates, {
+              edgePadding: {
+                top: 100,
+                right: 100,
+                bottom: 100,
+                left: 100,
+              },
+              animated: true,
+            });
+          }
         }}
       >
         {filteredStores.map((store, index) => (
@@ -96,9 +163,8 @@ export default function MapScreen() {
               latitude: store.x,
               longitude: store.y,
             }}
-            onPress={() => handleStorePress(store)}
           >
-            <Callout tooltip>
+            <Callout tooltip onPress={() => handleStorePress(store)}>
               <View style={styles.calloutContainer}>
                 <Text style={styles.calloutTitle}>{store.name}</Text>
                 <Text style={styles.calloutText}>
@@ -111,7 +177,6 @@ export default function MapScreen() {
           </Marker>
         ))}
       </MapView>
-
       <View style={styles.filterBox}>
         <Text style={styles.filterHeader}>Filter by Company:</Text>
         <SelectList
