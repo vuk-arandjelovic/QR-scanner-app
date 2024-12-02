@@ -29,9 +29,8 @@ export default function MapScreen() {
   const loadData = async () => {
     try {
       const storesRes = await StoresService.getStores();
-      console.log("Stores Response:", JSON.stringify(storesRes, null, 2));
       if (storesRes.status === "error") {
-        console.error("Error loading stores:", storesRes.message);
+        console.error("Load Data Error:", storesRes.message);
         alert("Error loading stores");
         return;
       }
@@ -50,8 +49,6 @@ export default function MapScreen() {
         }
         return companies;
       }, []);
-
-      console.log("Companies List:", companyList);
       setCompanies(companyList);
     } catch (err) {
       console.error("Load Data Error:", err);

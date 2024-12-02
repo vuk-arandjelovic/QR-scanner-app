@@ -18,6 +18,10 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
 
   async function handleRegister() {
+    if (!email || !username || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
     try {
       const usernameTaken = await AuthService.checkUsername(username);
       if (usernameTaken?.status === "error") {
@@ -34,14 +38,7 @@ const RegisterScreen = () => {
       }
     } catch (err) {
       console.log(err);
-      if (err?.response && err?.response?.status === 422) {
-        alert("Please fill in both fields.");
-        console.log("Error 422... :)");
-        return;
-      }
-      alert(
-        "Code " + err?.response?.status + ": " + err?.response?.data?.detail
-      );
+      alert("Code " + err?.status + ": " + err?.message);
     }
   }
 

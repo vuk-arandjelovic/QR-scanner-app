@@ -11,14 +11,19 @@ import { useNavigation } from "@react-navigation/core";
 import AuthService from "@/services/auth.service";
 import StorageService from "@/services/storage.service";
 import theme from "@/styles/theme";
+
 const storeToken = async (value) => {
+  if (!value) {
+    console.error("No token provided to store");
+    return false;
+  }
   try {
     await StorageService.set("token", value);
-    return true; // Return true if storing is successful
+    return true;
   } catch (e) {
     console.error(e);
     alert("Error saving token");
-    return false; // Return false if storing fails
+    return false;
   }
 };
 
@@ -28,17 +33,17 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   async function handleLogin() {
+    if (!email || !password) {
+      alert("Please fill in both fields.");
+      return;
+    }
     try {
       const res = await AuthService.login(email, password);
-      console.log(res);
       if (res?.status !== "success") {
-        console.log("No token received after login.");
-        alert("Login failed.");
+        alert("Login failed. Please try again later.");
         return;
       }
-      const tokenStored = await storeToken(
-        JSON.stringify(res?.response?.token)
-      );
+      const tokenStored = await storeToken(res?.response?.token);
       if (!tokenStored) {
         console.error("Token storage failed");
         return;
@@ -46,12 +51,7 @@ const LoginScreen = () => {
       navigation.navigate("LoggedIn");
     } catch (err) {
       console.log(err);
-      if (err?.response && err?.response?.status === 422) {
-        alert("Please fill in both fields.");
-      } else
-        alert(
-          "Code " + err?.response?.status + ": " + err?.response?.data?.detail
-        );
+      alert("Code " + err?.status + ": " + err?.message);
     }
   }
 

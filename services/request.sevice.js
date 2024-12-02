@@ -9,6 +9,7 @@ export class RequestService {
   instance;
   collectionName;
   static isHandlingSession = false;
+
   constructor(collectionName) {
     this.init();
     this.collectionName = collectionName;
@@ -66,47 +67,42 @@ export class RequestService {
     return this;
   }
 
-  // _handleHeaders = async (c) => {
-  //   if (CONFIG.auth_token) {
-  //     // console.log("Used token from config");
-  //     c.headers["Authorization"] = `Bearer ${CONFIG.auth_token}`;
-  //   } else {
-  //     const token = await StorageService.get("token");
-  //     // console.log("Used token from storage");
-  //     if (token) c.headers["Authorization"] = `Bearer ${token}`;
-  //   }
-  //   return c;
-  // };
   _handleHeaders = async (config) => {
     const token = await StorageService.get("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
+    if (!token) {
+      return config;
+    }
+    try {
+      const timeUntilExpiry = jwtDecode(token).exp * 1000 - Date.now();
+      // console.log("Time until expiry (ms):", timeUntilExpiry);
+      // console.log(CONFIG.api.refreshTime);
+      if (timeUntilExpiry < CONFIG.api.refreshTime) {
+        try {
+          const response = await axios.post(`${CONFIG.api.core}/auth/refresh`, {
+            token,
+          });
 
-        const timeUntilExpiry = decoded.exp * 1000 - Date.now();
-        console.log("Time until expiry (ms):", timeUntilExpiry);
-        console.log("Should refresh:", timeUntilExpiry < 5 * 60 * 1000);
-
-        if (timeUntilExpiry < 5 * 60 * 1000) {
-          console.log("Attempting token refresh");
-          try {
-            const response = await AuthService.refreshToken(token);
-            console.log("Refresh response:", response);
-            const newToken = response.token;
-            await StorageService.set("token", JSON.stringify(newToken));
-            config.headers["Authorization"] = `Bearer ${newToken}`;
-          } catch (error) {
-            console.error("Refresh failed:", error);
+          if (response?.data?.response?.token) {
+            await StorageService.set("token", response.data.response.token);
+            config.headers[
+              "Authorization"
+            ] = `Bearer ${response.data.response.token}`;
+          } else {
+            console.error("No token in refresh response");
           }
-        } else {
+        } catch (error) {
+          console.error("Refresh failed:", error.response?.data || error);
           config.headers["Authorization"] = `Bearer ${token}`;
         }
-      } catch (error) {
-        console.error("Token processing error:", error);
+      } else {
+        config.headers["Authorization"] = `Bearer ${token}`;
       }
+    } catch (error) {
+      console.error("Token processing error:", error);
     }
     return config;
   };
+
   _handleErrors = async (error) => {
     if (error?.response?.status === 401 && !RequestService.isHandlingSession) {
       RequestService.isHandlingSession = true;
@@ -127,8 +123,8 @@ export class RequestService {
             routes: [{ name: "Welcome" }],
           });
         }
-      } catch (innerError) {
-        console.log("Error handling unauthorized:", innerError);
+      } catch (err) {
+        console.log("Error handling unauthorized:", err);
       } finally {
         RequestService.isHandlingSession = false;
       }

@@ -50,8 +50,6 @@ export default function QueryScreen() {
     }
   };
   const handleHistoryPress = (item) => {
-    console.log("Opening history for item:", item); // Debug log
-
     setSelectedItem(item);
     setHistoryModalVisible(true);
   };
