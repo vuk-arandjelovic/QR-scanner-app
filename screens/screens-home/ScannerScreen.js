@@ -17,7 +17,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/core";
 import theme from "@/styles/theme";
 
 const ScannerScreen = () => {
-  const isFocused = useIsFocused;
+  const isFocused = useIsFocused();
   const navigator = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -96,19 +96,17 @@ const ScannerScreen = () => {
     lastScanRef.current = data;
     setScanned(true);
     showToast("Processing bill...", "info");
-
     try {
       const res = await ScrapeService.scrape(data);
-      console.log(res);
+      console.log(res.response);
       if (res.status === "error") {
         showToast(res.message, "error");
       } else {
         showToast("Bill processed successfully", "success");
-
         handleBack();
       }
     } catch (error) {
-      showToast(error, "error");
+      showToast(error.message, "error");
     }
 
     scanTimeoutRef.current = setTimeout(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import MapView, { Callout, Marker } from "react-native-maps";
+
 import StoresService from "@/services/stores.service";
 import RecieptsService from "@/services/reciepts.service";
 import theme from "@/styles/theme";
@@ -22,9 +24,11 @@ export default function MapScreen() {
   const [detailsModal, setDetailsModal] = useState(false);
   const [selectedCompanyPib, setSelectedCompanyPib] = useState(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {

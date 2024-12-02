@@ -22,7 +22,7 @@ const WelcomeScreen = () => {
   };
   useEffect(() => {
     const checkSession = async () => {
-      const token = JSON.parse(await StorageService.get("token"));
+      const token = await StorageService.get("token");
       if (token) {
         const res = await AuthService.checkSession(token);
         if (res?.status === "success") navigation.navigate("LoggedIn");

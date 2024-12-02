@@ -59,7 +59,11 @@ export default function LoggedInNavigator() {
       />
       <LoggedIn.Screen name="Map" component={MapScreen} options={navOptions} />
       <LoggedIn.Screen
-        options={{ headerShown: false, drawerItemStyle: { display: "none" } }}
+        options={{
+          headerShown: false,
+          drawerItemStyle: { display: "none" },
+          unmountOnBlur: true,
+        }}
         name="Scanner"
         component={ScannerScreen}
       />
