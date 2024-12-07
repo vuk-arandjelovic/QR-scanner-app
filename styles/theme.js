@@ -853,6 +853,131 @@ export const guarantee = {
   },
 };
 
+export const itemCard = {
+  itemCard: {
+    backgroundColor: "white",
+    padding: 10,
+    marginBottom: 8,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  highlightedCard: {
+    backgroundColor: "#e3f2fd",
+    borderColor: "#42a5f5",
+    borderWidth: 1,
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  itemDetails: {
+    fontSize: 14,
+    color: "#666",
+  },
+  itemTotal: {
+    fontSize: 15,
+    fontWeight: "500",
+    marginTop: 4,
+    color: "#0782F9",
+  },
+  dateText: {
+    color: "#666",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 8,
+  },
+};
+
+export const billCard = {
+  billCard: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    elevation: 3,
+  },
+  storeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  billDate: {
+    color: "#666",
+    marginBottom: 5,
+  },
+  billPfr: {
+    fontSize: 14,
+    color: "#0782F9",
+    marginBottom: 3,
+  },
+  itemCount: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 3,
+  },
+  billTotal: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#0782F9",
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 8,
+  },
+};
+
+export const baseModal = {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "90%",
+    maxHeight: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#0782F9",
+  },
+  closeButton: {
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 30,
+    color: "#666",
+  },
+  contentContainer: {
+    marginBottom: 20,
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingTop: 15,
+  },
+};
+
 export default {
   welcome,
   auth,
@@ -864,4 +989,7 @@ export default {
   query,
   receipts,
   guarantee,
+  itemCard,
+  billCard,
+  baseModal,
 };
