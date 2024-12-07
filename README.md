@@ -43,7 +43,7 @@ EXPO_PUBLIC_API_URL=your_backend_url
 ```bash
 yarn start
 # or using npm
-npm start
+npm run start
 ```
 
 ## Technical Details
