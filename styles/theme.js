@@ -828,6 +828,29 @@ export const guarantee = {
     marginTop: 4,
     color: "#0782F9",
   },
+  expiredGuaranteeCard: {
+    backgroundColor: "#ffebee",
+    borderColor: "#ef5350",
+    borderWidth: 1,
+  },
+  expiredText: {
+    color: "#d32f2f",
+  },
+  highlightedItem: {
+    backgroundColor: "#e3f2fd",
+    borderColor: "#42a5f5",
+    borderWidth: 1,
+  },
+  highlightedText: {
+    color: "#1976d2",
+    fontWeight: "bold",
+  },
+  itemDetails: {
+    backgroundColor: "#f5f5f5",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
 };
 
 export default {

@@ -37,6 +37,9 @@ export default function GuaranteeScreen() {
   const [detailsModal, setDetailsModal] = useState(false);
   const [billDetails, setBillDetails] = useState(null);
 
+  const isExpired = (date) => {
+    return new Date(date) < new Date();
+  };
   const getUserId = async () => {
     try {
       const userId = await StorageService.getUserId();
@@ -172,8 +175,12 @@ export default function GuaranteeScreen() {
       alert("Error deleting guarantee");
     }
   };
-  const handleEdit = (guarantee) => {
-    setEditingGuarantee(guarantee);
+  const handleEdit = async (guarantee) => {
+    const billData = await RecieptsService.getReciept(guarantee.bill);
+    const selectedItemDetails = billData.response.items.find(
+      (item) => item.item.id === guarantee.item
+    );
+    setEditingGuarantee({ ...guarantee, ...selectedItemDetails });
     setGuaranteeName(guarantee.name);
     setDate(new Date(guarantee.expiration));
     setExpirationDate(new Date(guarantee.expiration).toLocaleDateString());
@@ -203,7 +210,14 @@ export default function GuaranteeScreen() {
   const handleCardPress = async (guarantee) => {
     try {
       const billData = await RecieptsService.getReciept(guarantee.bill);
-      setBillDetails(billData.response);
+      const selectedItemDetails = billData.response.items.find(
+        (item) => item.item.id === guarantee.item
+      );
+      setBillDetails({
+        ...billData.response,
+        highlightedItem: selectedItemDetails,
+        guaranteePfr: billData.response.pfr,
+      });
       setDetailsModal(true);
     } catch (err) {
       console.error(err);
@@ -224,32 +238,40 @@ export default function GuaranteeScreen() {
           <Text style={styles.headerText}>Garancije:</Text>
         </View>
         <View style={styles.content}>
-          {guarantees.map((guarantee) => (
-            <TouchableOpacity
-              key={guarantee._id}
-              style={styles.guaranteeCard}
-              onPress={() => handleCardPress(guarantee)}
-            >
-              <Text style={styles.guaranteeName}>{guarantee.name}</Text>
-              <Text style={styles.guaranteeDate}>
-                Expires: {new Date(guarantee.expiration).toLocaleDateString()}
-              </Text>
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={[styles.cardButton, styles.editButton]}
-                  onPress={() => handleEdit(guarantee)}
+          {guarantees.map((guarantee) => {
+            const expired = isExpired(guarantee.expiration);
+            return (
+              <TouchableOpacity
+                key={guarantee._id}
+                style={[
+                  styles.guaranteeCard,
+                  expired && styles.expiredGuaranteeCard,
+                ]}
+                onPress={() => handleCardPress(guarantee)}
+              >
+                <Text style={styles.guaranteeName}>{guarantee.name}</Text>
+                <Text
+                  style={[styles.guaranteeDate, expired && styles.expiredText]}
                 >
-                  <Text style={styles.buttonText}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.cardButton, styles.deleteButton]}
-                  onPress={() => handleDelete(guarantee._id)}
-                >
-                  <Text style={styles.buttonText}>Delete</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          ))}
+                  Expires: {new Date(guarantee.expiration).toLocaleDateString()}
+                </Text>
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={[styles.cardButton, styles.editButton]}
+                    onPress={() => handleEdit(guarantee)}
+                  >
+                    <Text style={styles.buttonText}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.cardButton, styles.deleteButton]}
+                    onPress={() => handleDelete(guarantee._id)}
+                  >
+                    <Text style={styles.buttonText}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
@@ -351,6 +373,17 @@ export default function GuaranteeScreen() {
             <Text style={styles.modalHeader}>Edit Guarantee</Text>
 
             <View style={styles.formContainer}>
+              {editingGuarantee && (
+                <View style={styles.itemDetails}>
+                  <Text style={styles.label}>
+                    Bill PFR: {editingGuarantee.bill.pfr}
+                  </Text>
+                  <Text style={styles.label}>
+                    Item: {editingGuarantee.item.name} x{" "}
+                    {editingGuarantee.amount}
+                  </Text>
+                </View>
+              )}
               <Text style={styles.label}>Guarantee Name:</Text>
               <TextInput
                 style={styles.input}
@@ -459,7 +492,14 @@ export default function GuaranteeScreen() {
                   <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Items</Text>
                     {billDetails?.items?.map((item, index) => (
-                      <View key={index} style={styles.itemCard}>
+                      <View
+                        key={index}
+                        style={[
+                          styles.itemCard,
+                          billDetails.highlightedItem?.item.id ===
+                            item.item.id && styles.highlightedItem,
+                        ]}
+                      >
                         <Text style={styles.itemName}>{item?.item?.name}</Text>
                         <Text style={styles.itemDetails}>
                           Quantity: {item?.amount} × {item?.item?.price} RSD

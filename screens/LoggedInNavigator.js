@@ -57,16 +57,15 @@ export default function LoggedInNavigator() {
         component={HomeScreen}
         options={navOptions}
       />
-      <LoggedIn.Screen name="Map" component={MapScreen} options={navOptions} />
       <LoggedIn.Screen
         options={{
           headerShown: false,
-          drawerItemStyle: { display: "none" },
           unmountOnBlur: true,
         }}
         name="Scanner"
         component={ScannerScreen}
       />
+
       <LoggedIn.Screen
         name="Profile"
         component={ProfileScreen}
@@ -78,13 +77,14 @@ export default function LoggedInNavigator() {
         options={navOptions}
       />
       <LoggedIn.Screen
-        name="Query"
-        component={QueryScreen}
-        options={navOptions}
-      />
-      <LoggedIn.Screen
         name="Guarantee"
         component={GuaranteeScreen}
+        options={navOptions}
+      />
+      <LoggedIn.Screen name="Map" component={MapScreen} options={navOptions} />
+      <LoggedIn.Screen
+        name="Query"
+        component={QueryScreen}
         options={navOptions}
       />
       <LoggedIn.Screen
