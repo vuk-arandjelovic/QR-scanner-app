@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   RefreshControl,
+  Keyboard,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -181,6 +182,7 @@ export default function ReceiptScreen() {
                 value={minAmount}
                 onChangeText={setMinAmount}
                 placeholder="Min Amount"
+                placeholderTextColor={"#000"}
                 keyboardType="numeric"
                 returnKeyType="done"
                 onSubmitEditing={() => {
@@ -192,6 +194,7 @@ export default function ReceiptScreen() {
                 value={maxAmount}
                 onChangeText={setMaxAmount}
                 placeholder="Max Amount"
+                placeholderTextColor={"#000"}
                 keyboardType="numeric"
                 returnKeyType="done"
                 onSubmitEditing={() => {

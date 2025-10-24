@@ -139,7 +139,7 @@ const ScannerScreen = () => {
       <View style={styles.overlay}>
         <View style={styles.unfocusedContainer}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <AntDesign name="back" size={34} color="white" />
+            <AntDesign name="left" size={34} color="white" />
           </TouchableOpacity>
         </View>
         <View style={styles.middleContainer}>

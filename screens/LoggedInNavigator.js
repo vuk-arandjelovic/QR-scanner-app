@@ -42,6 +42,7 @@ export default function LoggedInNavigator() {
   return (
     <LoggedIn.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
+      useLegacyImplementation={false}
       initialRouteName="Home"
       backBehavior="firstRoute"
       screenOptions={{

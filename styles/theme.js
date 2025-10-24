@@ -795,6 +795,7 @@ export const guarantee = {
   buttonText: {
     color: "white",
     fontWeight: "bold",
+    textAlign: "center",
   },
   dateInput: {
     borderWidth: 1,
